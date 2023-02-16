@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 #include <windows.h>
-#include "QuickSort.cpp"
+#include "QuickSortUnitTest.cpp"
 
 using namespace std;
 void readText(const string& path, string* originalfile);
@@ -18,15 +18,26 @@ void printLines(string** str, int len);
 int startToBackCmp(const void* str1, const void* str2);
 int backToStartCmp(const void* str1, const void* str2);
 void saveText(string** str, int len, string path);
+void workWithText();
+
+
+
 
 
 
 int main()
 {
+    setlocale(LC_ALL, "Russian");
+    //workWithText();
+    startQuickSortUnitTest();
+
+
+}
+
+void workWithText()
+{
     string path = "test.txt";
-    //cout << "Введите путь файла: ";
-    //cin >> path;
-    
+
 
     string fulltext;
     readText(path, &fulltext);
@@ -36,7 +47,7 @@ int main()
     string* textLines = new string[stramount]{};
     fromOneCharToStrings(fulltext, textLines);
 
-    string** startToBackLines = new string*[stramount]{};
+    string** startToBackLines = new string * [stramount] {};
     copyOriginalTextForSort(textLines, startToBackLines, stramount);
     textSort(startToBackLines, stramount, startToBackCmp);
 

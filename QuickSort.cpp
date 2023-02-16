@@ -2,19 +2,19 @@
 #include "QuickSort.h"
 
 
-void quickSort(void* arr, int len, int elementSize, int (*cmp)(const void* str1, const void* str2))
+void quickSort(void* arr, int len, int elementSize, int (*cmp)(const void* obj1, const void* obj2))
 {
-    quickSort(arr, elementSize, 0, len - 1);
+    quickSort((char*)arr, elementSize, 0, len - 1, cmp);
 }
 
 
-void quickSort(void* arr, int elementSize, const int left, const int right, int (*cmp)(const void* str1, const void* str2))
+void quickSort(char* arr, int elementSize, const int left, const int right, int (*cmp)(const void* obj1, const void* obj2))
 {
     int len = (right - left) + 1;
     int currLeft = left;
     int currRight = right;
     int midIndex = (right + left) / 2;
-    void* midNum = &arr[midIndex * elementSize];
+    char* midNum = &(arr[getByteIndex(midIndex, elementSize)]);
 
     if (1 >= len)
     {
@@ -23,16 +23,18 @@ void quickSort(void* arr, int elementSize, const int left, const int right, int 
 
     if (len == 2)
     {
-        if (arr[left] > arr[right])
+        int leftByte = getByteIndex(left, elementSize);
+        int rightByte = getByteIndex(right, elementSize);
+        if (cmp( &( arr[leftByte] ), &(arr[rightByte])) > 0)
         {
-            exchange(arr[left], arr[right]);
+            exchange(arr, left, right, elementSize, &midIndex, &midNum);
         }
         return;
     }
 
     if (len == 3)
     {
-        sort3(&arr[left]);
+        sort3(&arr[getByteIndex(left, elementSize)], elementSize, cmp);
         return;
     }
 
@@ -40,44 +42,90 @@ void quickSort(void* arr, int elementSize, const int left, const int right, int 
     for (;;)
     {
         if (currRight - currLeft <= 0) break;
-        if (arr[currLeft] >= midNum)
+        //if (arr[currLeft] >= midNum)
+        if (cmp(&( arr[getByteIndex(currLeft, elementSize)] ), midNum) >= 0)
         {
-            while (midNum < arr[currRight])
+            //while (midNum < arr[currRight])
+            while (cmp(midNum, & (arr[getByteIndex(currRight, elementSize)] )) < 0)
             {
                 if (currRight - currLeft <= 0) break;
                 currRight--;
 
             }
-            exchange(arr[currLeft], arr[currRight], elementSize);
+            //exchange(arr[currLeft], arr[currRight], elementSize);
+            exchange(arr, currLeft, currRight, elementSize, &midIndex, &midNum);
             currLeft++;
             currRight--;
             continue;
         }
         currLeft++;
     }
-    if (arr[currRight] > midNum)
+    //if (arr[currRight] > midNum)
+    if (cmp(&( arr[getByteIndex(currRight, elementSize)] ), midNum) > 0)
     {
-        quickSort(arr, left, currRight - 1);
-        quickSort(arr, currRight, right);
+        quickSort(arr, elementSize, left, currRight - 1, cmp);
+        quickSort(arr, elementSize, currRight, right, cmp);
     }
     else
     {
-        quickSort(arr, left, currRight);
-        quickSort(arr, currRight + 1, right);
+        quickSort(arr, elementSize, left, currRight, cmp);
+        quickSort(arr, elementSize, currRight + 1, right, cmp);
     }
 
 }
 
+void sort3(char* arr, int elementSize, int (*cmp)(const void* obj1, const void* obj2))
+{
+    int index0 = getByteIndex(0, elementSize);
+    int index1 = getByteIndex(1, elementSize);
+    int index2 = getByteIndex(2, elementSize);
+    if (arr[index0] > arr[index2])
+    {
+        exchange(&arr[index0], &arr[index2], elementSize);
+    }
+    if (arr[index0] > arr[index1])
+    {
+        exchange(&arr[index0], &arr[index1], elementSize);
+    }
+    else if (arr[index1] > arr[index2])
+    {
+        exchange(&arr[index1], &arr[index2], elementSize);
+    }
+}
+
+int getByteIndex(int index, int elementSize)
+{
+    return index * elementSize;
+}
 
 
-void exchange(void* a, void* b, int elementSize)
+
+void exchange(char* a, char* b, int elementSize)
 {
     char t = 0;
 
     for (int i = 0; i < elementSize; i++)
     {
         t = a[i];
+        a[i] = b[i];
         b[i] = t;
-
     }
+}
+
+
+void exchange(char* arr, int fIndex, int sIndex, int elementSize, int* midIndex, char** minIndexptr)
+{
+    exchange(&arr[getByteIndex(fIndex, elementSize)], &arr[getByteIndex(sIndex, elementSize)], elementSize);
+
+    if (fIndex == *midIndex)
+    {
+        (*minIndexptr) = &arr[getByteIndex(sIndex, elementSize)];
+        *midIndex = sIndex;
+    }
+    else if (sIndex == *midIndex)
+    {
+        (*minIndexptr) = &arr[getByteIndex(fIndex, elementSize)];
+        *midIndex = fIndex;
+    }
+
 }
