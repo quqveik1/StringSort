@@ -1,9 +1,13 @@
 #pragma once
 #include "QuickSort.h"
+#include "SortStatistic.h"
+
 
 
 void quickSort(void* arr, int len, int elementSize, int (*cmp)(const void* obj1, const void* obj2))
 {
+    setCCmps(0);
+    setCExchanges(0);
     quickSort((char*)arr, elementSize, 0, len - 1, cmp);
 }
 
@@ -34,7 +38,7 @@ void quickSort(char* arr, int elementSize, const int left, const int right, int 
 
     if (len == 3)
     {
-        sort3(&arr[getByteIndex(left, elementSize)], elementSize, cmp);
+        sort3(arr, left, elementSize, &midIndex, &midNum, cmp);
         return;
     }
 
@@ -42,17 +46,15 @@ void quickSort(char* arr, int elementSize, const int left, const int right, int 
     for (;;)
     {
         if (currRight - currLeft <= 0) break;
-        //if (arr[currLeft] >= midNum)
         if (cmp(&( arr[getByteIndex(currLeft, elementSize)] ), midNum) >= 0)
         {
-            //while (midNum < arr[currRight])
-            while (cmp(midNum, & (arr[getByteIndex(currRight, elementSize)] )) < 0)
+            while (cmp(midNum, &( arr[getByteIndex(currRight, elementSize)] )) < 0)
             {
                 if (currRight - currLeft <= 0) break;
                 currRight--;
 
             }
-            //exchange(arr[currLeft], arr[currRight], elementSize);
+            if (currRight - currLeft <= 0) break;
             exchange(arr, currLeft, currRight, elementSize, &midIndex, &midNum);
             currLeft++;
             currRight--;
@@ -60,7 +62,7 @@ void quickSort(char* arr, int elementSize, const int left, const int right, int 
         }
         currLeft++;
     }
-    //if (arr[currRight] > midNum)
+
     if (cmp(&( arr[getByteIndex(currRight, elementSize)] ), midNum) > 0)
     {
         quickSort(arr, elementSize, left, currRight - 1, cmp);
@@ -74,22 +76,22 @@ void quickSort(char* arr, int elementSize, const int left, const int right, int 
 
 }
 
-void sort3(char* arr, int elementSize, int (*cmp)(const void* obj1, const void* obj2))
+void sort3(char* arr, int fElement, int elementSize, int* midIndex, char** minIndexptr, int (*cmp)(const void* obj1, const void* obj2))
 {
-    int index0 = getByteIndex(0, elementSize);
-    int index1 = getByteIndex(1, elementSize);
-    int index2 = getByteIndex(2, elementSize);
-    if (arr[index0] > arr[index2])
+    int index0 = getByteIndex(fElement, elementSize);
+    int index1 = getByteIndex(fElement + 1, elementSize);
+    int index2 = getByteIndex(fElement + 2, elementSize);
+    if (cmp(&( arr[index0] ), &( arr[index2] )) > 0)
     {
-        exchange(&arr[index0], &arr[index2], elementSize);
+        exchange(arr, fElement, fElement + 2, elementSize, midIndex, minIndexptr);
     }
-    if (arr[index0] > arr[index1])
+    if (cmp(&(arr[index0]), &(arr[index1])) > 0)
     {
-        exchange(&arr[index0], &arr[index1], elementSize);
+        exchange(arr, fElement, fElement + 1, elementSize, midIndex, minIndexptr);
     }
-    else if (arr[index1] > arr[index2])
+    if (cmp(&(arr[index1]), &(arr[index2])) > 0)
     {
-        exchange(&arr[index1], &arr[index2], elementSize);
+        exchange(arr, fElement + 1, fElement + 2, elementSize, midIndex, minIndexptr);
     }
 }
 
@@ -103,7 +105,7 @@ int getByteIndex(int index, int elementSize)
 void exchange(char* a, char* b, int elementSize)
 {
     char t = 0;
-
+    getCExchanges()++;
     for (int i = 0; i < elementSize; i++)
     {
         t = a[i];
@@ -128,4 +130,11 @@ void exchange(char* arr, int fIndex, int sIndex, int elementSize, int* midIndex,
         *midIndex = fIndex;
     }
 
+}
+
+
+int cmpInt(const void* a, const void* b)
+{
+    getCCmps()++;
+    return (*(int*)a) - (*(int*)b);
 }

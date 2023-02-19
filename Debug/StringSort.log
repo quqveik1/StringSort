@@ -1,2 +1,2 @@
 ﻿  StringSort.cpp
-  StringSort.vcxproj -> C:\Users\Алехандро\Desktop\AlexProjects\StringSort\Debug\StringSort.exe
+C:\Users\Алехандро\Desktop\AlexProjects\StringSort\QuickSortUnitTest.cpp(28,9): error C3861: '_getch': identifier not found

@@ -1,10 +1,10 @@
 ﻿// StringSort.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #define _CRT_SECURE_NO_WARNINGS
+#include <TXLib.h>
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <windows.h>
 #include "QuickSortUnitTest.cpp"
 
 using namespace std;
@@ -28,10 +28,7 @@ void workWithText();
 int main()
 {
     setlocale(LC_ALL, "Russian");
-    //workWithText();
     startQuickSortUnitTest();
-
-
 }
 
 void workWithText()
@@ -114,7 +111,7 @@ int backToStartCmp(const void* str1, const void* str2)
 
     
 
-    int minLen = min(len1, len2);
+    int minLen = std::min(len1, len2);
     for (int i = 1; i <= minLen; i++)
     {
         int delta = (*_str1)[len1 - i] - (*_str2)[len2 - i];
@@ -143,7 +140,7 @@ int startToBackCmp(const void* str1, const void* str2)
     int len2 = _str2->length();
     int lenDelta = len2 - len1;
 
-    int minLen = min(len1, len2);
+    int minLen = std::min(len1, len2);
     for (int i = 0; i < minLen; i++)
     {
         int delta = (*_str1)[i] - (*_str2)[i];
