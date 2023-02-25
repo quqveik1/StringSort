@@ -28,16 +28,13 @@ void startQuickSortUnitTest()
     coordinatSysConfig conf;
     sys1.config_ = conf;
 
-
-
     sys1.intepretK_.y = -0.1;
     sys1.intepretK_.x = 1;
-
     sys1.drawAxis({ 10, 1 });
+
+
     sys2.intepretK_.y = -0.1;
     sys2.intepretK_.x = 1;
-
-
     sys2.drawAxis({ 10, 1 });
 
 
