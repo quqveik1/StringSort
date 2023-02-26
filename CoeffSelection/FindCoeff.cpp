@@ -4,11 +4,13 @@
 #include <Q_Vector.h>
 #include <TXLib.h>
 
-
-void findBestCoeff(double* k, double* b, Vector& kBound, Vector& bBound, Vector& xBound, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x))
+double maxQuadraticDelta = DBL_MIN;
+void findBestCoeff(coordinatSys& deltaSys, double* k, double* b, Vector& kBound, Vector& bBound, Vector& xBound, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x))
 {
+    deltaSys.clean();
+
     double minQuadraticDelta = DBL_MAX;
-    int detalisationK = 10;
+    int detalisationK = 1000;
     int kDelta = abs(kBound.delta()) * detalisationK;
     double kStart = kBound.x * detalisationK;
 
@@ -34,9 +36,45 @@ void findBestCoeff(double* k, double* b, Vector& kBound, Vector& bBound, Vector&
             *k = _k;
             *b = _b;
         }
+        if (isBigger(currQuadraticDelta, maxQuadraticDelta))
+        {
+            maxQuadraticDelta = currQuadraticDelta;
+        }
 
+        //printf("currQuadraticDelta: %lf | k: %lf, b: %lf\n", currQuadraticDelta, _k, _b);
+        COLORREF quadraticDeltaColor = getQuadraticDeltaColor(currQuadraticDelta);
+        txSetColor(quadraticDeltaColor);
+        txSetFillColor(quadraticDeltaColor);
+        Vector point = { _k, _b};
+        deltaSys.drawCircle(point, 2);
     }
+    
 
+}
+//x0 + (x1 - x0) * t
+COLORREF getQuadraticDeltaColor(double quadraticDelta)
+{
+    const double maxQuadraticDelta = 204;
+    const double minQuadraticDelta = 0.03;
+    const double rangeDelta = maxQuadraticDelta - minQuadraticDelta;
+    const int r0 = 0;
+    const int r1 = 255;
+
+    const int g0 = 0;
+    const int g1 = 0;
+
+    const int b0 = 255;
+    const int b1 = 0;
+
+    double t = (quadraticDelta - minQuadraticDelta) / rangeDelta;
+
+    int r2 = r0 + (r1 - r0) * t;
+    int g2 = 0;
+    int b2 = b0 + (b1 - b0) * t;
+
+    
+    COLORREF answer = RGB(r2, g2, b2);
+    return answer;
 }
 
 double calcQuadratic(double k, double b, double x, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x))
@@ -62,8 +100,8 @@ void drawBestCoeff(coordinatSys& sys, double k, double b, Vector& xBound, double
 
 }
 
-void findAndDrawBestCoeff(coordinatSys& sys, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double* findedK, double* findedB, Vector& kBound, Vector& bBound, Vector& xBound, COLORREF color)
+void findAndDrawBestCoeff(coordinatSys& sys, coordinatSys& deltaSys, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double* findedK, double* findedB, Vector& kBound, Vector& bBound, Vector& xBound, COLORREF color)
 {
-    findBestCoeff(findedK, findedB, kBound, bBound, xBound, fnc, originalFnc);
+    findBestCoeff(deltaSys, findedK, findedB, kBound, bBound, xBound, fnc, originalFnc);
     drawBestCoeff(sys, *findedK, *findedB, xBound, fnc, color);
 }
