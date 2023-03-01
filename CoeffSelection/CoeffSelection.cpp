@@ -66,6 +66,7 @@ double linearFnc(double k, double b, double x)
 
 double kSinB(double k, double b, double x)
 {
+    /// k - A, B - f(частота)
     return k * sin(b * x);
 }
 
@@ -78,11 +79,13 @@ void sinusSetup(coordinatSys& sys, coordinatSys& deltaSys)
 {
 
     double k = 0, b = 0;
-    Vector kBound = { 3, 7 };
-    Vector bBound = { 0, 20 };
+    Vector kBound = { 0, 10 }; //k = A - амплитуда идеальное A = 5
+    Vector bBound = { 6.8, 7.2 }; // b = f - фаза  идеальное f = 7
     Vector xBound = sys.getXBound();
 
+    //          k       b
     testOneConf(5,      7,  sys, deltaSys, kBound, bBound, xBound, kSinB, originalKSinB);
+
     //testOneConf(5,      7,  sys, deltaSys, kBound, bBound, xBound, sinfnc, originalSinFnc);
     //testOneConf(9,      44, sys, deltaSys, kBound, bBound, xBound, sinfnc, originalSinFnc);
     //testOneConf(3,     35,  sys, deltaSys, kBound, bBound, xBound, sinfnc, originalSinFnc);
@@ -136,20 +139,25 @@ void setAxis(coordinatSys* sys1, coordinatSys* deltaSys, coordinatSysConfig* con
     sys1->startPosPix_ = { 0, 0 };
     sys1->finishPosPix_ = { screenSize.x, screenSize.y / 2 };
     sys1->nullCoor_ = { 40, screenSize.y / 4 };
+    deltaSys->xName = "X";
+    deltaSys->yName = "Y";
     
     sys1->config_ = *conf;
 
-    sys1->intepretK_.y = -200;
+    sys1->intepretK_.y = -20;
     sys1->intepretK_.x = 100;
-    sys1->drawAxis({ 2000, 1000 });
+    sys1->drawAxis({ 200, 1000 });
     
     deltaSys->startPosPix_ = { 0, screenSize.y / 2 };
     deltaSys->finishPosPix_ = { screenSize.x, screenSize.y};
-    deltaSys->nullCoor_ = { 20, screenSize.y - 20};
+    deltaSys->nullCoor_ = {40, screenSize.y - 20};
+    deltaSys->nullPoint = {0, 6.8};
+    deltaSys->xName = "A";
+    deltaSys->yName = "f";
     
     deltaSys->config_ = *conf;
 
-    deltaSys->intepretK_.y = -18;
+    deltaSys->intepretK_.y = -1000;
     deltaSys->intepretK_.x = 80;
-    deltaSys->drawAxis({ 1800, 800 });
+    deltaSys->drawAxis({ 10000, 800 });
 }
