@@ -1,7 +1,7 @@
 #pragma once
 #include "FindCoeff.h"
 #include <float.h>
-#include <Q_Vector.h>
+#include "..\..\TESTWIN32_GRAPHICAPP\Q_Vector.h"
 #include <TXLib.h>
 
 double maxQuadraticDelta = DBL_MIN;

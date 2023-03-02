@@ -3,9 +3,10 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <TXLib.h>
-#include "..\..\ALGORITHMICPROJECT\Q_CoordinatSystem.h"
-#include <Q_Vector.h>
+//#include "..\..\ALGORITHMICPROJECT\Q_CoordinatSystem.h"
+#include "CoordinatSystem.cpp"
 #include "FindCoeff.cpp"
+#include "..\..\TESTWIN32_GRAPHICAPP\Q_Vector.h"
 
 void setAxis(coordinatSys* sys1, coordinatSys* deltaSys, coordinatSysConfig* conf, const Vector& screenSize);
 void drawOriginalFunc(coordinatSys& sys, double (*originalFnc)(double x));
