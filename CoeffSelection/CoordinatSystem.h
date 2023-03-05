@@ -2,12 +2,10 @@
 #pragma once
 
 //#include "Q_Vector.h"
-#include <TXLib.h>
 #include "..\..\TESTWIN32_GRAPHICAPP\Q_Vector.h"
 #include "..\..\TESTWIN32_GRAPHICAPP\Q_Rect.h"
 #include <math.h>
 #include <string.h>
-#include ""
 //#include "Config.h"
 //#include "Q_Ball.h"
 

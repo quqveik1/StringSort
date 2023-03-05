@@ -1,12 +1,13 @@
 ﻿// CoeffSelection.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #define _CRT_SECURE_NO_WARNINGS
+#include "CoorEngine.cpp"
 #include <iostream>
-#include <TXLib.h>
 //#include "..\..\ALGORITHMICPROJECT\Q_CoordinatSystem.h"
-#include "CoordinatSystem.cpp"
-#include "FindCoeff.cpp"
-#include "..\..\TESTWIN32_GRAPHICAPP\Q_Vector.h"
+//#include "CoordinatSystem.cpp"
+//#include "FindCoeff.cpp"
+//#include "FindCoeff.cpp"
+/*(
 
 void setAxis(coordinatSys* sys1, coordinatSys* deltaSys, coordinatSysConfig* conf, const Vector& screenSize);
 void drawOriginalFunc(coordinatSys& sys, double (*originalFnc)(double x));
@@ -26,11 +27,17 @@ double kSinB(double k, double b, double x);
 double originalKSinB(double x);
 
 double currOriginalK = 0, currOriginalB = 0;
+*/
 
 // sin(5x + 7)
 int main()
 {
     Vector screenSize = { 1000, 800 };
+
+    CoorEngine* coorEngine = new CoorEngine();
+    coorEngine->startApp();
+    
+    /*
     txCreateWindow(screenSize.x, screenSize.y);
     txSetTextAlign(TA_RIGHT);
     coordinatSys sys{};
@@ -39,8 +46,10 @@ int main()
     setAxis(&sys, &deltaSys, &conf, screenSize);
     
     sinusSetup(sys, deltaSys);
+    */
 }
 
+/*
 
 void linearStup(coordinatSys& sys, coordinatSys& deltaSys)
 {
@@ -162,3 +171,4 @@ void setAxis(coordinatSys* sys1, coordinatSys* deltaSys, coordinatSysConfig* con
     deltaSys->intepretK_.x = 80;
     deltaSys->drawAxis({ 10000, 800 });
 }
+*/

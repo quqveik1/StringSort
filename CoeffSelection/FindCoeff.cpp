@@ -2,7 +2,6 @@
 #include "FindCoeff.h"
 #include <float.h>
 #include "..\..\TESTWIN32_GRAPHICAPP\Q_Vector.h"
-#include <TXLib.h>
 
 double maxQuadraticDelta = DBL_MIN;
 void findBestCoeff(coordinatSys& deltaSys, double* k, double* b, Vector& kBound, Vector& bBound, Vector& xBound, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x))

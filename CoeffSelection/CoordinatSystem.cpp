@@ -348,8 +348,8 @@ Vector CoordinatSys::getXBound()
     Vector maxAnswer = convertFromPixels(finishPosPix_);
 
     Vector answer = {};
-    answer.x = std::min(minAnswer.x, maxAnswer.x);
-    answer.y = std::max(minAnswer.x, maxAnswer.x);
+    answer.x = min(minAnswer.x, maxAnswer.x);
+    answer.y = max(minAnswer.x, maxAnswer.x);
     return answer;
 }
 
@@ -360,8 +360,8 @@ Vector CoordinatSys::getYBound()
     Vector maxAnswer = convertFromPixels(finishPosPix_);
 
     Vector answer = {};
-    answer.x = std::min(minAnswer.y, maxAnswer.y);
-    answer.y = std::max(minAnswer.y, maxAnswer.y);
+    answer.x = min(minAnswer.y, maxAnswer.y);
+    answer.y = max(minAnswer.y, maxAnswer.y);
     return answer;
 }
 
