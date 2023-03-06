@@ -61,24 +61,117 @@ Vector CoordinatSystemWindow::fromPixToCell(Vector pixs)
     return cells;
 }
 
+int CoordinatSystemWindow::addPoint(Vector point)
+{
+    int _size = points.size();
+    points.push_back(point);
+    app->updateScreen(this);
+    return _size;
+}
+
+int CoordinatSystemWindow::clearSys(Vector point)
+{
+    int _size = points.size();
+    points.clear();
+    app->updateScreen(this);
+    return _size;
+}
+
 void CoordinatSystemWindow::draw()
 {
+    Window::draw();
     Vector pixStep = getPixCellStep();
     Vector cellStep = getHumanCellStep();
 
     char textNum[MAX_PATH] = {};
-    for (int x = 1; x <= lround(cCells.x); x++)
+    app->setColor(axisColor, *getOutputDC());
+    for (int x = 0; x <= lround(cCells.x); x++)
     {
-        double pixX = x * pixStep.x;
-        double outputNum = cellNull.x + x * cellStep.x;
-        sprintf(textNum, "%lf", outputNum);
-
-        Rect drawRect = {};
-        drawRect.pos = fromCellToPix({ outputNum, 0 });
-        drawRect.finishPos = drawRect.pos + 100;
-
-        app->drawText(drawRect, textNum, *getOutputDC(), DT_LEFT);
+        drawOneXLine(x, cellStep, textNum);
     }
+    for (int x = -1; x >= -lround(cCells.x); x--)
+    {
+        drawOneXLine(x, cellStep, textNum);
+    }
+
+    for (int y = 0; y <= lround(cCells.y); y++)
+    {
+        drawOneYLine(y, cellStep, textNum);
+    }
+    for (int y = -1; y >= -lround(cCells.y); y--)
+    {
+        drawOneYLine(y, cellStep, textNum);
+    }
+
+    drawPoints();
+
+
+}
+
+void CoordinatSystemWindow::drawPoints()
+{
+    int vectorSize = points.size();
+    M_HDC& _outDC = *getOutputDC();
+    app->setColor(pointsColor, _outDC);
+
+    Vector halfSize = { pointsR, pointsR };
+
+    for (int i = 0; i < vectorSize; i++)
+    {
+        Vector pixPos = fromCellToPix(points[i]);
+        app->ellipse(pixPos, halfSize, _outDC);
+    }
+}
+
+void CoordinatSystemWindow::drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf)
+{
+    double outputNum = cellNull.y+ stepNum * cellStep.y;
+    sprintf(textBuf, "%.2lf", outputNum);
+
+    Rect drawRect = {};
+    Vector pixPos = fromCellToPix({ 0, outputNum });
+    
+    drawRect.finishPos.x = pixPos.x;
+    drawRect.pos.x = drawRect.finishPos.x - 100;
+
+    drawRect.pos.y = pixPos.y;
+    drawRect.finishPos.y = drawRect.pos.y + 100;
+
+    Rect lineRect = {};
+    lineRect.pos.x = 0;
+    lineRect.pos.y = pixPos.y;
+
+    lineRect.finishPos.x = getSize().x;
+    lineRect.finishPos.y = lineRect.pos.y;
+    M_HDC& _outDC = *getOutputDC();
+
+    app->line(lineRect, _outDC);
+
+    app->drawText(drawRect, textBuf, _outDC, DT_RIGHT);
+}
+
+void CoordinatSystemWindow::drawOneXLine(int stepNum, const Vector& cellStep, char* textBuf)
+{
+    double outputNum = cellNull.x + stepNum * cellStep.x;
+    sprintf(textBuf, "%.2lf", outputNum);
+
+    Rect drawRect = {};
+    Vector pixPos = fromCellToPix({ outputNum, 0 });
+
+    drawRect.pos = pixPos;
+    drawRect.finishPos = drawRect.pos + 100;
+
+    Rect lineRect = {};
+    lineRect.pos.x = pixPos.x;
+    lineRect.pos.y = 0;
+
+    lineRect.finishPos.x = pixPos.x;
+    lineRect.finishPos.y = getSize().y;
+    M_HDC& _outDC = *getOutputDC();
+
+    app->line(lineRect, _outDC);
+
+    app->drawText(drawRect, textBuf, _outDC, DT_LEFT);
 }
 
 int CoordinatSystemWindow::onSize(Vector managerSize, Rect _newRect/* = {}*/)
