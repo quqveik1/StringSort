@@ -22,7 +22,7 @@ struct CoordinatSystemWindow : Window
 
     void drawOneXLine(int stepNum, const Vector& cellStep, char* textBuf);
     void drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf);
-    void drawPoints();
+    virtual void drawPoints();
 
     void setCCells(Vector _cScreenCells);
     void setAxisColor(COLORREF _color) { axisColor = _color; app->updateScreen(this); };
@@ -37,8 +37,9 @@ struct CoordinatSystemWindow : Window
     Vector fromCellToPix(Vector cells);
     Vector fromPixToCell(Vector pixs);
 
+    virtual Vector getXCellBound();
     virtual int addPoint(Vector point);
-    virtual int clearSys(Vector point);
+    virtual int clearSys();
 
     void draw() override;
     int onSize(Vector managerSize, Rect _newRect = {}) override;

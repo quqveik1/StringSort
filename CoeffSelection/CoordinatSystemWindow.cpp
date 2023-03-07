@@ -61,15 +61,24 @@ Vector CoordinatSystemWindow::fromPixToCell(Vector pixs)
     return cells;
 }
 
+
+Vector CoordinatSystemWindow::getXCellBound()
+{
+    Vector answer = {};
+    answer.x = fromPixToCell({ rect.pos.x, 0}).x;
+    answer.y = fromPixToCell({ rect.finishPos.x, 0}).x;
+    return answer;
+}
+
 int CoordinatSystemWindow::addPoint(Vector point)
 {
     int _size = points.size();
     points.push_back(point);
-    app->updateScreen(this);
+    invalidateButton();
     return _size;
 }
 
-int CoordinatSystemWindow::clearSys(Vector point)
+int CoordinatSystemWindow::clearSys()
 {
     int _size = points.size();
     points.clear();

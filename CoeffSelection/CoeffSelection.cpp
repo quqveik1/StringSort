@@ -36,6 +36,8 @@ int main()
 
     CoorEngine* coorEngine = new CoorEngine();
     coorEngine->startApp();
+
+    delete coorEngine;
     
     /*
     txCreateWindow(screenSize.x, screenSize.y);
