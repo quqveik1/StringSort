@@ -6,8 +6,10 @@ int ColorfullCoordinatSystemWindow::addPoint(Vector point, COLORREF pointColor/*
 {
     int res = CoordinatSystemWindow::addPoint(point);
 
+    pointsColorArrMutex.lock();
     if (pointColor == 0) pointColor = pointsColor;
     pointsColorArr.push_back(pointColor);
+    pointsColorArrMutex.unlock();
     return res;
 }
 
@@ -22,14 +24,19 @@ void ColorfullCoordinatSystemWindow::drawPoints()
 
     Vector halfSize = { pointsR, pointsR };
 
+    pointsMutex.lock();
+    pointsColorArrMutex.lock();
     for (int i = 0; i < vectorSize; i++)
     {
         COLORREF newColor = pointsColorArr[i];
         if (newColor != currColor)
         {
             app->setColor(newColor, _outDC);
+            currColor = newColor;
         }
         Vector pixPos = fromCellToPix(points[i]);
         app->ellipse(pixPos, halfSize, _outDC);
     }
+    pointsMutex.unlock();
+    pointsColorArrMutex.unlock();
 }

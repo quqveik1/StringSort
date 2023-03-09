@@ -5,6 +5,7 @@
 
 struct ColorfullCoordinatSystemWindow : CoordinatSystemWindow
 {
+    mutex pointsColorArrMutex;
     vector<COLORREF> pointsColorArr;
 
     ColorfullCoordinatSystemWindow(AbstractAppData* _app) :

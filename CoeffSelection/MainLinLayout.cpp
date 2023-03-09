@@ -2,6 +2,7 @@
 #include "MainLinLayout.h"
 #include <thread>
 #include <LinearLayout.cpp>
+#include <iostream>
 
 
 double MainLinLayout::currOriginalK = 5;
@@ -12,6 +13,49 @@ MainLinLayout::MainLinLayout(AbstractAppData* _app, Vector _startPos) :
 {
     currOriginalK = 5;
     currOriginalK = 7;
+}
+
+
+
+void MainLinLayout::draw()
+{
+    int timeBefore = clock();
+    bool isMainWindowMoving = app->isWindowMoving();
+    if (!isMainWindowMoving)
+    {
+        LinearLayout::draw();
+    }
+    else
+    {
+        Vector currSize = getSize();
+        Vector copySize = onWindowMovingCopyDC.getSize(); 
+        M_HDC& _outputDC = *getOutputDC();
+        app->stretchBlt(_outputDC, { .pos = {}, .finishPos = currSize }, onWindowMovingCopyDC, { .pos = {}, .finishPos = copySize });
+    }
+    int timeAfter = clock();
+    int delta = timeAfter - timeBefore;
+
+    //cout << "Рисование заняло: " << delta << "мс\n";
+}
+
+int MainLinLayout::onEnterWindowSizeMove()
+{
+    int res = LinearLayout::onEnterWindowSizeMove();
+
+    Vector currSize = finalDC.getSize();
+    onWindowMovingCopyDC.setSize(currSize, app);
+    app->bitBlt(onWindowMovingCopyDC, {}, finalDC);
+    app->DEBUGsaveImage(onWindowMovingCopyDC);
+
+    return res;
+}
+
+int MainLinLayout::onExitWindowSizeMove()
+{
+    int res = LinearLayout::onExitWindowSizeMove();
+    invalidateButton();
+
+    return res;
 }
 
 int MainLinLayout::onSize(Vector managerSize, Rect _newRect)
@@ -83,6 +127,9 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
         Vector point = { _k, _b };
         bottomSystem->addPoint(point, quadraticDeltaColor);
     }
+    countFncOnTopSystem(*k, *b, suggestedFncColor);
+
+    invalidateButton();
 }
 
 COLORREF MainLinLayout::getQuadraticDeltaColor(double quadraticDelta)
@@ -116,6 +163,42 @@ double MainLinLayout::calcQuadratic(double k, double b, double x, double(*fnc)(d
     return (dy * dy);
 }
 
+void MainLinLayout::countOriginalFnc()
+{
+    countFncOnTopSystem(currOriginalK, currOriginalB);
+};
+
+void MainLinLayout::countFncOnTopSystem(double k, double b, COLORREF _color/* = NULL*/)
+{
+    Vector topCellXBound = topSystem->getXCellBound();
+    double topCellXBoundLen = topCellXBound.delta();
+    double xDelta = abs(topCellXBoundLen / 1000);
+
+    for (double x = topCellXBound.x; x < topCellXBound.y; x += xDelta)
+    {
+        double fncRes = sinFnc(k, b, x);
+        Vector newPoint = { x, fncRes };
+        topSystem->addPoint(newPoint, _color);
+    }
+}
+
+
+void MainLinLayout::startGradientComputation()
+{
+    int timeStart = clock();
+
+    thread executeThread(&MainLinLayout::countGradientMap, this);
+    executeThread.detach();
+
+    thread originalFncThread(&MainLinLayout::countOriginalFnc, this);
+    originalFncThread.detach();
+
+    int timeFinish = clock();
+
+    int delta = timeFinish - timeStart;
+
+    //cout << "Подсчет всех точек занял: " << delta << "мс\n";
+}
 
 void MainLinLayout::countGradientMap()
 {
@@ -123,5 +206,7 @@ void MainLinLayout::countGradientMap()
     Vector kBound = { 0, 10 }; //k = A - амплитуда идеальное A = 5
     Vector bBound = { 6.8, 7.2 }; // b = f - фаза  идеальное f = 7
     //thread findKoefficents(&MainLinLayout::threadCoeffFinder, this, );
+    //threadCoeffFinder(&answerK, &answerB, kBound, bBound, &MainLinLayout::sinFnc, &MainLinLayout::originalSinFnc);
+    //thread finder(&MainLinLayout::threadCoeffFinder, this, &answerK, &answerB, kBound, bBound, &MainLinLayout::sinFnc, this, &MainLinLayout::originalSinFnc, this);
     threadCoeffFinder(&answerK, &answerB, kBound, bBound, &MainLinLayout::sinFnc, &MainLinLayout::originalSinFnc);
 }

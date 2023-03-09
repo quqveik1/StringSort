@@ -17,8 +17,9 @@ void CoorEngine::onCreate(HWND window, UINT message, WPARAM wParam, LPARAM lPara
     mainWnd->addWindow(mainLayout);
     
 
-    CoordinatSystemWindow* topCoordinatSystemWindow = new CoordinatSystemWindow(this);
+    ColorfullCoordinatSystemWindow* topCoordinatSystemWindow = new ColorfullCoordinatSystemWindow(this);
     topCoordinatSystemWindow->setCCells({ 20, 20 });
+    topCoordinatSystemWindow->pixNullPercantage = { 0.5, 0.5 };
     topCoordinatSystemWindow->onSize({}, {0, 0, 50, 500});
 
     mainLayout->setTopSystem(topCoordinatSystemWindow);
@@ -30,14 +31,13 @@ void CoorEngine::onCreate(HWND window, UINT message, WPARAM wParam, LPARAM lPara
     mainLayout->addWindow(topCoordinatSystemWindow);
 
     ColorfullCoordinatSystemWindow* bottomCoordinatSystemWindow = new ColorfullCoordinatSystemWindow(this);
-    bottomCoordinatSystemWindow->setCCells({ 20, 20 });
+    bottomCoordinatSystemWindow->setCellNull({0, 6.8});
+    bottomCoordinatSystemWindow->setCCells({ 12, 0.5 });
     bottomCoordinatSystemWindow->onSize({}, {0, 0, 50, 500});
     bottomCoordinatSystemWindow->setMatchParentX(true);
     mainLayout->setBottomSystem(bottomCoordinatSystemWindow);
     mainLayout->addWindow(bottomCoordinatSystemWindow);
-
-
-    mainLayout->countGradientMap();
+    mainLayout->startGradientComputation();
 
 
 }

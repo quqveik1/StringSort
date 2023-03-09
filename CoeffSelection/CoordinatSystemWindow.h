@@ -1,5 +1,6 @@
 #pragma once           
 #include <Window.cpp>
+#include <mutex>
 
 struct CoordinatSystemWindow : Window
 {
@@ -11,6 +12,7 @@ struct CoordinatSystemWindow : Window
     COLORREF pointsColor = C_LIGHTBLUE;
     int pointsR = 2;
 
+    mutex pointsMutex;
     vector<Vector> points;
 
     CoordinatSystemWindow(AbstractAppData* _app) :
@@ -25,6 +27,7 @@ struct CoordinatSystemWindow : Window
     virtual void drawPoints();
 
     void setCCells(Vector _cScreenCells);
+    void setCellNull(Vector _cellNull) { cellNull = _cellNull; invalidateButton(); };
     void setAxisColor(COLORREF _color) { axisColor = _color; app->updateScreen(this); };
     void setPointsColor(COLORREF _color) { pointsColor = _color; app->updateScreen(this); };
     void setPointsR(int _r) { pointsR = _r; app->updateScreen(this); };
