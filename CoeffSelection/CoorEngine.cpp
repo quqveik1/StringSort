@@ -35,6 +35,7 @@ void CoorEngine::onCreate(HWND window, UINT message, WPARAM wParam, LPARAM lPara
     bottomCoordinatSystemWindow->setCCells({ 12, 0.5 });
     bottomCoordinatSystemWindow->onSize({}, {0, 0, 50, 500});
     bottomCoordinatSystemWindow->setMatchParentX(true);
+    bottomCoordinatSystemWindow->setOnClickListener(mainLayout);
     mainLayout->setBottomSystem(bottomCoordinatSystemWindow);
     mainLayout->addWindow(bottomCoordinatSystemWindow);
     mainLayout->startGradientComputation();

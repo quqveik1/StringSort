@@ -55,10 +55,13 @@ Vector CoordinatSystemWindow::fromCellToPix(Vector cells)
 Vector CoordinatSystemWindow::fromPixToCell(Vector pixs)
 {
     Vector density = getDensity();
-    pixs -= getPixNullCoordinats();
+    Vector _nullPixCoor = getPixNullCoordinats();
+    pixs.x -= _nullPixCoor.x;
+    pixs.y = _nullPixCoor.y - pixs.y;
     Vector cells = {};
     cells.x = pixs.x / density.x;
-    cells.y = - (pixs.y / density.y);
+    cells.y = (pixs.y / density.y);
+    cells += cellNull;
 
     return cells;
 }
@@ -119,7 +122,20 @@ void CoordinatSystemWindow::draw()
 
     drawPoints();
 
+}
 
+
+void CoordinatSystemWindow::onClick(Vector mp)
+{
+    Window::onClick(mp);
+    Vector clickedCellPos = fromPixToCell(mp);
+
+    cout << clickedCellPos.getStr();
+
+    if (onClickListener)
+    {
+        onClickListener->sendMessage(NULL, &clickedCellPos);
+    }
 }
 
 void CoordinatSystemWindow::drawPoints()

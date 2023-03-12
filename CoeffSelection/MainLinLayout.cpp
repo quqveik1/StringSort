@@ -11,11 +11,7 @@ double MainLinLayout::currOriginalB = 7;
 MainLinLayout::MainLinLayout(AbstractAppData* _app, Vector _startPos) :
     LinearLayout(_app, _startPos, LinearLayout::FLAG_VERTICAL)
 {
-    currOriginalK = 5;
-    currOriginalK = 7;
 }
-
-
 
 void MainLinLayout::draw()
 {
@@ -38,15 +34,23 @@ void MainLinLayout::draw()
     //cout << "Рисование заняло: " << delta << "мс\n";
 }
 
+
+
+void MainLinLayout::onMessageRecieve(const char* name, void* data)
+{
+    Vector& clickedCellPos = *(Vector*)data;
+    countFncOnTopSystem(clickedCellPos.x, clickedCellPos.y, C_GREEN);
+}
+
 int MainLinLayout::onEnterWindowSizeMove()
 {
     int res = LinearLayout::onEnterWindowSizeMove();
 
-    Vector currSize = finalDC.getSize();
+    M_HDC& outputDC = *getOutputDC();
+    Vector currSize = outputDC.getSize();
     onWindowMovingCopyDC.setSize(currSize, app);
-    app->bitBlt(onWindowMovingCopyDC, {}, finalDC);
-    app->DEBUGsaveImage(onWindowMovingCopyDC);
 
+    app->bitBlt(onWindowMovingCopyDC, {}, outputDC);
     return res;
 }
 
@@ -104,6 +108,7 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
 
     for (int i = 0; i < 100000; i++)
     {
+        if (!app->getAppCondition()) break;
         double currQuadraticDelta = 0;
         double _k = ((rand() % kDelta) + kStart) / detalisationK;
         double _b = ((rand() % bDelta) + bStart) / detalisationK;
@@ -176,6 +181,7 @@ void MainLinLayout::countFncOnTopSystem(double k, double b, COLORREF _color/* = 
 
     for (double x = topCellXBound.x; x < topCellXBound.y; x += xDelta)
     {
+        if (!app->getAppCondition()) break;
         double fncRes = sinFnc(k, b, x);
         Vector newPoint = { x, fncRes };
         topSystem->addPoint(newPoint, _color);
@@ -205,8 +211,5 @@ void MainLinLayout::countGradientMap()
     double k = 0, b = 0;
     Vector kBound = { 0, 10 }; //k = A - амплитуда идеальное A = 5
     Vector bBound = { 6.8, 7.2 }; // b = f - фаза  идеальное f = 7
-    //thread findKoefficents(&MainLinLayout::threadCoeffFinder, this, );
-    //threadCoeffFinder(&answerK, &answerB, kBound, bBound, &MainLinLayout::sinFnc, &MainLinLayout::originalSinFnc);
-    //thread finder(&MainLinLayout::threadCoeffFinder, this, &answerK, &answerB, kBound, bBound, &MainLinLayout::sinFnc, this, &MainLinLayout::originalSinFnc, this);
     threadCoeffFinder(&answerK, &answerB, kBound, bBound, &MainLinLayout::sinFnc, &MainLinLayout::originalSinFnc);
 }

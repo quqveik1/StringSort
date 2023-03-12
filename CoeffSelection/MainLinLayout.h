@@ -35,6 +35,8 @@ struct MainLinLayout : LinearLayout
     void countOriginalFnc();
     void countFncOnTopSystem(double k, double b, COLORREF _color = NULL);
 
+    virtual void onMessageRecieve(const char* name, void* data) override;
+
     virtual void draw() override;
     virtual int onEnterWindowSizeMove() override;
     virtual int onExitWindowSizeMove() override;

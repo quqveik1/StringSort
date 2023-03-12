@@ -15,6 +15,8 @@ struct CoordinatSystemWindow : Window
     mutex pointsMutex;
     vector<Vector> points;
 
+    Window* onClickListener = NULL;
+
     CoordinatSystemWindow(AbstractAppData* _app) :
         Window(_app)
     {
@@ -27,10 +29,11 @@ struct CoordinatSystemWindow : Window
     virtual void drawPoints();
 
     void setCCells(Vector _cScreenCells);
-    void setCellNull(Vector _cellNull) { cellNull = _cellNull; invalidateButton(); };
-    void setAxisColor(COLORREF _color) { axisColor = _color; app->updateScreen(this); };
-    void setPointsColor(COLORREF _color) { pointsColor = _color; app->updateScreen(this); };
-    void setPointsR(int _r) { pointsR = _r; app->updateScreen(this); };
+    void setCellNull(Vector _cellNull)   { cellNull = _cellNull;    invalidateButton(); };
+    void setAxisColor(COLORREF _color)   { axisColor = _color;      invalidateButton(); };
+    void setPointsColor(COLORREF _color) { pointsColor = _color;    invalidateButton(); };
+    void setPointsR(int _r)              { pointsR = _r;            invalidateButton(); };
+    void setOnClickListener(Window* _wnd) { onClickListener = _wnd; invalidateButton(); };
 
     //-pix per cell
     Vector getDensity();
@@ -45,5 +48,6 @@ struct CoordinatSystemWindow : Window
     virtual int clearSys();
 
     void draw() override;
+    virtual void onClick(Vector mp) override;
     int onSize(Vector managerSize, Rect _newRect = {}) override;
 };
