@@ -11,6 +11,8 @@ struct CoordinatSystemWindow : Window
     COLORREF axisColor = RGB(150, 150, 150);
     COLORREF pointsColor = C_LIGHTBLUE;
     int pointsR = 2;
+    string axisXName;
+    string axisYName;
 
     mutex pointsMutex;
     vector<Vector> points;
@@ -27,6 +29,7 @@ struct CoordinatSystemWindow : Window
     void drawOneXLine(int stepNum, const Vector& cellStep, char* textBuf);
     void drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf);
     virtual void drawPoints();
+    void drawAxisName();
 
     void setCCells(Vector _cScreenCells);
     void setCellNull(Vector _cellNull)   { cellNull = _cellNull;    invalidateButton(); };
@@ -44,6 +47,7 @@ struct CoordinatSystemWindow : Window
     Vector fromPixToCell(Vector pixs);
 
     virtual Vector getXCellBound();
+    virtual Vector getYCellBound();
     virtual int addPoint(Vector point);
     virtual int clearSys();
 

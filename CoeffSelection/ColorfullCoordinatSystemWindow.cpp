@@ -14,6 +14,16 @@ int ColorfullCoordinatSystemWindow::addPoint(Vector point, COLORREF pointColor/*
 }
 
 
+int ColorfullCoordinatSystemWindow::clearSys()
+{
+    int _size = CoordinatSystemWindow::clearSys();
+    pointsColorArrMutex.lock();
+    pointsColorArr.clear();
+    pointsColorArrMutex.unlock();
+    return _size;
+}
+
+
 void ColorfullCoordinatSystemWindow::drawPoints()
 {
     int vectorSize = points.size();

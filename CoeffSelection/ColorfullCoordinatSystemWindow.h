@@ -13,6 +13,8 @@ struct ColorfullCoordinatSystemWindow : CoordinatSystemWindow
     {
     };
 
+
+    virtual int clearSys() override;
     virtual int addPoint(Vector point, COLORREF _pointColor = NULL);
     virtual void drawPoints() override;
 };

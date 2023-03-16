@@ -75,6 +75,15 @@ Vector CoordinatSystemWindow::getXCellBound()
     return answer;
 }
 
+Vector CoordinatSystemWindow::getYCellBound()
+{
+    Vector answer = {};
+    answer.x = fromPixToCell({ 0, rect.pos.y}).y;
+    answer.y = fromPixToCell({ 0, rect.finishPos.y}).y;
+    return answer;
+}
+
+
 int CoordinatSystemWindow::addPoint(Vector point)
 {
     pointsMutex.lock();
@@ -88,39 +97,46 @@ int CoordinatSystemWindow::addPoint(Vector point)
 
 int CoordinatSystemWindow::clearSys()
 {
+    pointsMutex.lock();
     int _size = points.size();
     points.clear();
-    app->updateScreen(this);
+    invalidateButton();
+    pointsMutex.unlock();
     return _size;
 }
 
 void CoordinatSystemWindow::draw()
 {
-    Window::draw();
-    Vector pixStep = getPixCellStep();
-    Vector cellStep = getHumanCellStep();
+    if (true/*!isValidViewState()*/)
+    {
+        Window::draw();
+        Vector pixStep = getPixCellStep();
+        Vector cellStep = getHumanCellStep();
 
-    char textNum[MAX_PATH] = {};
-    app->setColor(axisColor, *getOutputDC());
-    for (int x = 0; x <= lround(cCellsLines.x); x++)
-    {
-        drawOneXLine(x, cellStep, textNum);
-    }
-    for (int x = -1; x >= -lround(cCellsLines.x); x--)
-    {
-        drawOneXLine(x, cellStep, textNum);
-    }
+        char textNum[MAX_PATH] = {};
+        app->setColor(axisColor, *getOutputDC());
+        for (int x = 0; x <= lround(cCellsLines.x); x++)
+        {
+            drawOneXLine(x, cellStep, textNum);
+        }
+        for (int x = -1; x >= -lround(cCellsLines.x); x--)
+        {
+            drawOneXLine(x, cellStep, textNum);
+        }
 
-    for (int y = 0; y <= lround(cCellsLines.y); y++)
-    {
-        drawOneYLine(y, cellStep, textNum);
-    }
-    for (int y = -1; y >= -lround(cCellsLines.y); y--)
-    {
-        drawOneYLine(y, cellStep, textNum);
-    }
+        for (int y = 0; y <= lround(cCellsLines.y); y++)
+        {
+            drawOneYLine(y, cellStep, textNum);
+        }
+        for (int y = -1; y >= -lround(cCellsLines.y); y--)
+        {
+            drawOneYLine(y, cellStep, textNum);
+        }
 
-    drawPoints();
+
+
+        drawPoints();
+    }
 
 }
 
@@ -153,6 +169,15 @@ void CoordinatSystemWindow::drawPoints()
         app->ellipse(pixPos, halfSize, _outDC);
     }
     pointsMutex.unlock();
+}
+
+
+void CoordinatSystemWindow::drawAxisName()
+{
+    M_HDC& _dc = *getOutputDC();
+    app->setColor(app->systemSettings->TextColor, _dc);
+    Vector xBound = getXCellBound();
+    Vector yBound = getYCellBound();
 }
 
 void CoordinatSystemWindow::drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf)

@@ -9,8 +9,58 @@ double MainLinLayout::currOriginalK = 5;
 double MainLinLayout::currOriginalB = 7;
 
 MainLinLayout::MainLinLayout(AbstractAppData* _app, Vector _startPos) :
-    LinearLayout(_app, _startPos, LinearLayout::FLAG_VERTICAL)
+    LinearLayout(_app, _startPos, LinearLayout::FLAG_VERTICAL),
+    downLinLayout(_app, {}, LinearLayout::FLAG_HORIZONTAL),
+    backGroundComputation(_app),
+    suggestedCoeff(_app),
+    answerCoeff(_app)
 {
+
+    ColorfullCoordinatSystemWindow* topCoordinatSystemWindow = new ColorfullCoordinatSystemWindow(app);
+    topCoordinatSystemWindow->setCCells({ 20, 20 });
+    topCoordinatSystemWindow->pixNullPercantage = { 0.5, 0.5 };
+    topCoordinatSystemWindow->onSize({}, { 0, 0, 50, 500 });
+
+    setTopSystem(topCoordinatSystemWindow);
+    LinearLayoutInfo* topInfo = new LinearLayoutInfo();
+    topInfo->margin = Rect{ 0, 0, 0, 10 };
+    topCoordinatSystemWindow->setLayoutInfo(topInfo);
+
+    topCoordinatSystemWindow->setMatchParentX(true);
+    addWindow(topCoordinatSystemWindow);
+
+    ColorfullCoordinatSystemWindow* bottomCoordinatSystemWindow = new ColorfullCoordinatSystemWindow(app);
+    bottomCoordinatSystemWindow->setCellNull({ 0, 6.8 });
+    bottomCoordinatSystemWindow->setCCells({ 12, 0.5 });
+    bottomCoordinatSystemWindow->onSize({}, { 0, 0, 50, 500 });
+    bottomCoordinatSystemWindow->setMatchParentX(true);
+    bottomCoordinatSystemWindow->setOnClickListener(this);
+    setBottomSystem(bottomCoordinatSystemWindow);
+    addWindow(bottomCoordinatSystemWindow);
+
+
+    addWindow(downLinLayout);
+
+    backGroundComputation.setText("Нет фоновых задач");
+    backGroundComputation.setFont(40);
+    backGroundComputation.setWrapStatus(1);
+    downLinLayout.addWindow(backGroundComputation);
+
+    static char suggestedCoeffText[MAX_PATH]{};
+    Vector suggestedCoefVector = { currOriginalK, currOriginalB };
+    sprintf(suggestedCoeffText, "Загаданный коэффицент: %s", suggestedCoefVector.getStr());
+    suggestedCoeff.setText(suggestedCoeffText);
+    suggestedCoeff.setFont(40);
+    suggestedCoeff.setWrapStatus(1);
+    downLinLayout.addWindow(suggestedCoeff);
+
+    answerCoeff.setText("Ответа пока нет");
+    answerCoeff.setFont(40);
+    answerCoeff.setWrapStatus(1);
+    downLinLayout.addWindow(answerCoeff);
+
+    startGradientComputation();
+    
 }
 
 void MainLinLayout::draw()
@@ -19,6 +69,7 @@ void MainLinLayout::draw()
     bool isMainWindowMoving = app->isWindowMoving();
     if (!isMainWindowMoving)
     {
+
         LinearLayout::draw();
     }
     else
@@ -27,6 +78,7 @@ void MainLinLayout::draw()
         Vector copySize = onWindowMovingCopyDC.getSize(); 
         M_HDC& _outputDC = *getOutputDC();
         app->stretchBlt(_outputDC, { .pos = {}, .finishPos = currSize }, onWindowMovingCopyDC, { .pos = {}, .finishPos = copySize });
+        cout << currSize.getStr() << ":" << currSize.getStr()<<endl;
     }
     int timeAfter = clock();
     int delta = timeAfter - timeBefore;
@@ -38,8 +90,21 @@ void MainLinLayout::draw()
 
 void MainLinLayout::onMessageRecieve(const char* name, void* data)
 {
-    Vector& clickedCellPos = *(Vector*)data;
-    countFncOnTopSystem(clickedCellPos.x, clickedCellPos.y, C_GREEN);
+    Vector clickedCellPos = *(Vector*)data;
+    //thread  userPointSelection(&MainLinLayout::onCertainPointSelection, this, clickedCellPos);
+    //userPointSelection.detach();
+    onCertainPointSelection(clickedCellPos);
+}
+
+void MainLinLayout::onCertainPointSelection(Vector clickedCellPos)
+{
+    topSystem->clearSys();
+    countOriginalFnc();
+    if(wasAnswerFinded) countFncOnTopSystem(answerK, answerK, suggestedFncColor);
+    countFncOnTopSystem(clickedCellPos.x, clickedCellPos.y, userSelectedFncColor);
+    invalidateButton();
+    cout << "MainLinLayout::onCertainPointSelectionEndDraw\n";
+
 }
 
 int MainLinLayout::onEnterWindowSizeMove()
@@ -48,9 +113,11 @@ int MainLinLayout::onEnterWindowSizeMove()
 
     M_HDC& outputDC = *getOutputDC();
     Vector currSize = outputDC.getSize();
-    onWindowMovingCopyDC.setSize(currSize, app);
 
+    onWindowMovingCopyDC.setSize(currSize, app);
     app->bitBlt(onWindowMovingCopyDC, {}, outputDC);
+
+
     return res;
 }
 
@@ -66,15 +133,25 @@ int MainLinLayout::onSize(Vector managerSize, Rect _newRect)
 {
     int res = LinearLayout::onSize(managerSize, _newRect);
     Vector _size = getSize();
+    downLineSize = _size * 0.1;
+    downLineSize.x = _size.x;
+
+    
+
+
     if (topSystem)
     {
-        topSystem->onSize(_size, { 0, 0, topSystem->getSize().x, _size.y * 0.5 });
+        topSystem->onSize(_size, { 0, 0, topSystem->getSize().x, (_size.y - downLineSize.y) * 0.5 });
     }
 
     if (bottomSystem)
     {
-        bottomSystem->onSize(_size, { 0, 0, bottomSystem->getSize().x, _size.y * 0.5 });
-    }
+        bottomSystem->onSize(_size, { 0, 0, bottomSystem->getSize().x, (_size.y - downLineSize.y) * 0.5 });                                                   
+    }                                                                            
+
+    backGroundComputation.onSize(_size, { {}, downLineSize });
+
+
 
     return LinearLayout::onSize(managerSize, _newRect);
 }
@@ -106,13 +183,13 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
     Vector topCellXBound = topSystem->getXCellBound();
     double topCellXBoundLen = topCellXBound.delta();
 
-    for (int i = 0; i < 100000; i++)
+    for (int i = 0; i < cCountingCoef; i++)
     {
         if (!app->getAppCondition()) break;
         double currQuadraticDelta = 0;
         double _k = ((rand() % kDelta) + kStart) / detalisationK;
         double _b = ((rand() % bDelta) + bStart) / detalisationK;
-        double xDelta = abs(topCellXBoundLen / 100);
+        double xDelta = abs(topCellXBoundLen / cQuadraticDeltaCountingPoints);
 
         for (double x = topCellXBound.x; x < topCellXBound.y; x += xDelta)
         {
@@ -127,14 +204,15 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
             *b = _b;
         }
 
-        //printf("currQuadraticDelta: %lf | k: %lf, b: %lf\n", currQuadraticDelta, _k, _b);
         COLORREF quadraticDeltaColor = getQuadraticDeltaColor(currQuadraticDelta);
         Vector point = { _k, _b };
         bottomSystem->addPoint(point, quadraticDeltaColor);
     }
+    wasAnswerFinded = true;
     countFncOnTopSystem(*k, *b, suggestedFncColor);
 
     invalidateButton();
+    cout << "FinishedCountGraientMap\n";
 }
 
 COLORREF MainLinLayout::getQuadraticDeltaColor(double quadraticDelta)
@@ -186,6 +264,7 @@ void MainLinLayout::countFncOnTopSystem(double k, double b, COLORREF _color/* = 
         Vector newPoint = { x, fncRes };
         topSystem->addPoint(newPoint, _color);
     }
+    invalidateButton();
 }
 
 
@@ -211,5 +290,11 @@ void MainLinLayout::countGradientMap()
     double k = 0, b = 0;
     Vector kBound = { 0, 10 }; //k = A - амплитуда идеальное A = 5
     Vector bBound = { 6.8, 7.2 }; // b = f - фаза  идеальное f = 7
+    backGroundComputation.setText("Расчет градиента");
     threadCoeffFinder(&answerK, &answerB, kBound, bBound, &MainLinLayout::sinFnc, &MainLinLayout::originalSinFnc);
+    backGroundComputation.setText("Нет фоновых задач");
+    static char ans[MAX_PATH] = {};
+    Vector answerVector = { answerK, answerB };
+    sprintf(ans, "Отгаданный Коэффициент: %s", answerVector.getStr());
+    answerCoeff.setText(ans);
 }

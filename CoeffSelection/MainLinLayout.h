@@ -2,6 +2,7 @@
 #include <LinearLayout.h>
 #include "CoordinatSystemWindow.h"
 #include "ColorfullCoordinatSystemWindow.h"
+#include <TextView.cpp>
 
 
 struct MainLinLayout : LinearLayout
@@ -9,12 +10,25 @@ struct MainLinLayout : LinearLayout
     ColorfullCoordinatSystemWindow* topSystem = NULL;
     ColorfullCoordinatSystemWindow* bottomSystem = NULL;
     COLORREF suggestedFncColor = C_LIGHTRED;
+    COLORREF userSelectedFncColor = C_GREEN;
+    Vector downLineSize = {};
+
+    LinearLayout downLinLayout;
+    TextView backGroundComputation;
+    TextView suggestedCoeff;
+    TextView answerCoeff;
+    
+    
 
     static double currOriginalK;
     static double currOriginalB;
 
+    int cCountingCoef = 100000;
+    int cQuadraticDeltaCountingPoints = 100;
+
     double answerK = 0;
     double answerB = 0;
+    bool wasAnswerFinded = false;
 
     M_HDC onWindowMovingCopyDC;
 
@@ -34,6 +48,7 @@ struct MainLinLayout : LinearLayout
     void countGradientMap();
     void countOriginalFnc();
     void countFncOnTopSystem(double k, double b, COLORREF _color = NULL);
+    void onCertainPointSelection(Vector clickedCellP);
 
     virtual void onMessageRecieve(const char* name, void* data) override;
 
