@@ -3,22 +3,30 @@
 #include "CoordinatSystemWindow.h"
 #include "ColorfullCoordinatSystemWindow.h"
 #include <TextView.cpp>
+#include "GraphicInfoButton.cpp"
 
 
 struct MainLinLayout : LinearLayout
 {
-    ColorfullCoordinatSystemWindow* topSystem = NULL;
-    ColorfullCoordinatSystemWindow* bottomSystem = NULL;
+    ColorfullCoordinatSystemWindow topSystem = NULL;
+    ColorfullCoordinatSystemWindow bottomSystem = NULL;
     COLORREF suggestedFncColor = C_LIGHTRED;
     COLORREF userSelectedFncColor = C_GREEN;
     Vector downLineSize = {};
+
+    LinearLayout topDescribtions;
+    TextView topDescribtion1;
+    TextView topDescribtion2;
+    TextView topDescribtion3;
+    LinearLayout bottomDescribtions;
+    TextView bottomDescribtion1;
+    TextView bottomDescribtion2;
 
     LinearLayout downLinLayout;
     TextView backGroundComputation;
     TextView suggestedCoeff;
     TextView answerCoeff;
-    
-    
+    GraphicInfoButton graphicInfoButton;
 
     static double currOriginalK;
     static double currOriginalB;
@@ -34,8 +42,12 @@ struct MainLinLayout : LinearLayout
 
     MainLinLayout(AbstractAppData* _app, Vector _startPos);
 
-    void setTopSystem(ColorfullCoordinatSystemWindow* _wnd) { topSystem = _wnd; };
-    void setBottomSystem(ColorfullCoordinatSystemWindow* _wnd) { bottomSystem = _wnd; };
+    //void setTopSystem(ColorfullCoordinatSystemWindow* _wnd) { topSystem = _wnd; };
+    //void setBottomSystem(ColorfullCoordinatSystemWindow* _wnd) { bottomSystem = _wnd; };
+
+    void initCoordinats();
+    void initDescribtions();
+    void initDownLinLayout();
 
     static double originalSinFnc(double x);
     static double sinFnc(double k, double b, double x);

@@ -70,16 +70,18 @@ Vector CoordinatSystemWindow::fromPixToCell(Vector pixs)
 Vector CoordinatSystemWindow::getXCellBound()
 {
     Vector answer = {};
-    answer.x = fromPixToCell({ rect.pos.x, 0}).x;
-    answer.y = fromPixToCell({ rect.finishPos.x, 0}).x;
+    answer.x = fromPixToCell({ 0, 0}).x;
+    answer.y = fromPixToCell({ getSize().x, 0}).x;
+    answer.sort();
     return answer;
 }
 
 Vector CoordinatSystemWindow::getYCellBound()
 {
     Vector answer = {};
-    answer.x = fromPixToCell({ 0, rect.pos.y}).y;
-    answer.y = fromPixToCell({ 0, rect.finishPos.y}).y;
+    answer.x = fromPixToCell({ 0, 0}).y;
+    answer.y = fromPixToCell({ 0, getSize().y}).y;
+    answer.sort();
     return answer;
 }
 
@@ -97,12 +99,21 @@ int CoordinatSystemWindow::addPoint(Vector point)
 
 int CoordinatSystemWindow::clearSys()
 {
-    pointsMutex.lock();
-    int _size = points.size();
-    points.clear();
-    invalidateButton();
-    pointsMutex.unlock();
-    return _size;
+    try
+    {
+        pointsMutex.lock();
+        int _size = points.size();
+        if (points.size() > 0) points.clear();
+        invalidateButton();
+        pointsMutex.unlock();
+        return _size;
+    }
+    catch(const char* msg)
+    {
+        cout << msg;
+    }
+    return 0;
+    
 }
 
 void CoordinatSystemWindow::draw()
@@ -132,6 +143,8 @@ void CoordinatSystemWindow::draw()
         {
             drawOneYLine(y, cellStep, textNum);
         }
+
+        drawAxisName();
 
 
 
@@ -178,6 +191,24 @@ void CoordinatSystemWindow::drawAxisName()
     app->setColor(app->systemSettings->TextColor, _dc);
     Vector xBound = getXCellBound();
     Vector yBound = getYCellBound();
+    
+    Vector xAxisNameTopRight = fromCellToPix({ xBound.y, cellNull.y });
+    Vector xAxisNameBottomLeft = { xAxisNameTopRight.x - 200, xAxisNameTopRight.y + 200 };
+
+    Rect rectXAxisName = { xAxisNameTopRight, xAxisNameBottomLeft };
+    rectXAxisName.sort();  
+
+    app->setColor(app->systemSettings->TextColor, *getOutputDC());
+    app->drawText(rectXAxisName, axisXName.c_str(), *getOutputDC(), DT_RIGHT | DT_TOP);
+
+    Vector yAxisNameLeftTop = fromCellToPix({ cellNull.x, yBound.y});
+    Vector yAxisNameRightBottom = { yAxisNameLeftTop.x + 200, yAxisNameLeftTop.y + 200 };
+
+    Rect rectYAxisName = { yAxisNameLeftTop, yAxisNameRightBottom };
+    rectYAxisName.sort();
+
+    app->setColor(app->systemSettings->TextColor, *getOutputDC());
+    app->drawText(rectYAxisName, axisYName.c_str(), *getOutputDC(), DT_LEFT | DT_TOP);
 }
 
 void CoordinatSystemWindow::drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf)

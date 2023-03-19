@@ -32,11 +32,13 @@ struct CoordinatSystemWindow : Window
     void drawAxisName();
 
     void setCCells(Vector _cScreenCells);
-    void setCellNull(Vector _cellNull)   { cellNull = _cellNull;    invalidateButton(); };
-    void setAxisColor(COLORREF _color)   { axisColor = _color;      invalidateButton(); };
-    void setPointsColor(COLORREF _color) { pointsColor = _color;    invalidateButton(); };
-    void setPointsR(int _r)              { pointsR = _r;            invalidateButton(); };
-    void setOnClickListener(Window* _wnd) { onClickListener = _wnd; invalidateButton(); };
+    void setCellNull(Vector _cellNull)   { cellNull = _cellNull;           invalidateButton(); };
+    void setAxisColor(COLORREF _color)   { axisColor = _color;             invalidateButton(); };
+    void setAxisXName(string _axisXName)   { axisXName = _axisXName;      invalidateButton(); };
+    void setAxisYName(string _axisYName)   { axisYName = _axisYName;      invalidateButton(); };
+    void setPointsColor(COLORREF _color) { pointsColor = _color;           invalidateButton(); };
+    void setPointsR(int _r)              { pointsR = _r;                   invalidateButton(); };
+    void setOnClickListener(Window* _wnd) { onClickListener = _wnd;        invalidateButton(); };
 
     //-pix per cell
     Vector getDensity();

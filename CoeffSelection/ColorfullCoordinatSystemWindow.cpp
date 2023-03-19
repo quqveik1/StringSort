@@ -16,11 +16,19 @@ int ColorfullCoordinatSystemWindow::addPoint(Vector point, COLORREF pointColor/*
 
 int ColorfullCoordinatSystemWindow::clearSys()
 {
-    int _size = CoordinatSystemWindow::clearSys();
-    pointsColorArrMutex.lock();
-    pointsColorArr.clear();
-    pointsColorArrMutex.unlock();
-    return _size;
+    try
+    {
+        int _size = CoordinatSystemWindow::clearSys();
+        pointsColorArrMutex.lock();
+        if (pointsColorArr.size() > 0) pointsColorArr.clear();
+        pointsColorArrMutex.unlock();
+        return _size;
+    }
+    catch (...)
+    {
+        cout << "Программа упала";
+    }
+    return 0;
 }
 
 
