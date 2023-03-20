@@ -42,10 +42,10 @@ void MainLinLayout::initCoordinats()
     topSystem.setAxisXName("X");
     topSystem.setAxisYName("Y");
 
-    //LinearLayoutInfo* topInfo = new LinearLayoutInfo();
-    static LinearLayoutInfo topInfo;
-    topInfo.margin = Rect{ 0, 0, 0, 10 };
-    topSystem.setLayoutInfo(&topInfo);
+    LinearLayoutInfo* topInfo = new LinearLayoutInfo();
+    //static LinearLayoutInfo topInfo;
+    topInfo->margin = Rect{ 0, 0, 0, 10 };
+    topSystem.setLayoutInfo(topInfo);
 
     topSystem.setMatchParentX(true);
     addWindow(topSystem);
@@ -142,6 +142,7 @@ void MainLinLayout::initDownLinLayout()
 void MainLinLayout::draw()
 {
     int timeBefore = clock();
+    Window::draw();
     bool isMainWindowMoving = app->isWindowMoving();
     if (!isMainWindowMoving)
     {
@@ -154,10 +155,6 @@ void MainLinLayout::draw()
         M_HDC& _outputDC = *getOutputDC();
         Vector currSize = _outputDC.getSize();
         app->stretchBlt(_outputDC, { .pos = {}, .finishPos = currSize }, onWindowMovingCopyDC, { .pos = {}, .finishPos = copySize });
-        //cout << currSize.toString() << "|CopySize:" << copySize.toString()<<endl;
-
-        //app->DEBUGsaveImage(_outputDC, "_outputDC");
-        //app->DEBUGsaveImage(onWindowMovingCopyDC, "onWindowMovingCopyDC");
     }
     int timeAfter = clock();
     int delta = timeAfter - timeBefore;

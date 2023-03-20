@@ -116,6 +116,47 @@ int CoordinatSystemWindow::clearSys()
     
 }
 
+void CoordinatSystemWindow::invalidateSysConfig()
+{
+    onSize({}, {});
+    invalidateButton();
+}
+
+int CoordinatSystemWindow::onSize(Vector managerSize, Rect _newRect/* = {}*/)
+{
+    Window::onSize(managerSize, _newRect);
+    axisSystemDC.setSize(getOutputDC()->getSize(), app);
+    app->setColor(color, axisSystemDC);
+    app->rectangle({}, axisSystemDC.getSize(), axisSystemDC);
+
+    Vector pixStep = getPixCellStep();
+    Vector cellStep = getHumanCellStep();
+
+    app->setColor(axisColor, axisSystemDC);
+    char textNum[MAX_PATH] = {};
+    for (int x = 0; x <= lround(cCellsLines.x); x++)
+    {
+        drawOneXLine(x, cellStep, textNum, axisSystemDC);
+    }
+    for (int x = -1; x >= -lround(cCellsLines.x); x--)
+    {
+        drawOneXLine(x, cellStep, textNum, axisSystemDC);
+    }
+
+    for (int y = 0; y <= lround(cCellsLines.y); y++)
+    {
+        drawOneYLine(y, cellStep, textNum, axisSystemDC);
+    }
+    for (int y = -1; y >= -lround(cCellsLines.y); y--)
+    {
+        drawOneYLine(y, cellStep, textNum, axisSystemDC);
+    }
+
+    drawAxisName(axisSystemDC);
+
+    return 0;
+}
+
 void CoordinatSystemWindow::draw()
 {
     if (true/*!isValidViewState()*/)
@@ -124,6 +165,7 @@ void CoordinatSystemWindow::draw()
         Vector pixStep = getPixCellStep();
         Vector cellStep = getHumanCellStep();
 
+        /*
         char textNum[MAX_PATH] = {};
         app->setColor(axisColor, *getOutputDC());
         for (int x = 0; x <= lround(cCellsLines.x); x++)
@@ -145,9 +187,8 @@ void CoordinatSystemWindow::draw()
         }
 
         drawAxisName();
-
-
-
+        */
+        app->bitBlt(*getOutputDC(), {}, axisSystemDC);
         drawPoints();
     }
 
@@ -185,10 +226,9 @@ void CoordinatSystemWindow::drawPoints()
 }
 
 
-void CoordinatSystemWindow::drawAxisName()
+void CoordinatSystemWindow::drawAxisName(M_HDC& destDC)
 {
-    M_HDC& _dc = *getOutputDC();
-    app->setColor(app->systemSettings->TextColor, _dc);
+    app->setColor(app->systemSettings->TextColor, destDC);
     Vector xBound = getXCellBound();
     Vector yBound = getYCellBound();
     
@@ -198,8 +238,8 @@ void CoordinatSystemWindow::drawAxisName()
     Rect rectXAxisName = { xAxisNameTopRight, xAxisNameBottomLeft };
     rectXAxisName.sort();  
 
-    app->setColor(app->systemSettings->TextColor, *getOutputDC());
-    app->drawText(rectXAxisName, axisXName.c_str(), *getOutputDC(), DT_RIGHT | DT_TOP);
+    app->setColor(app->systemSettings->TextColor, destDC);
+    app->drawText(rectXAxisName, axisXName.c_str(), destDC, DT_RIGHT | DT_TOP);
 
     Vector yAxisNameLeftTop = fromCellToPix({ cellNull.x, yBound.y});
     Vector yAxisNameRightBottom = { yAxisNameLeftTop.x + 200, yAxisNameLeftTop.y + 200 };
@@ -207,11 +247,11 @@ void CoordinatSystemWindow::drawAxisName()
     Rect rectYAxisName = { yAxisNameLeftTop, yAxisNameRightBottom };
     rectYAxisName.sort();
 
-    app->setColor(app->systemSettings->TextColor, *getOutputDC());
-    app->drawText(rectYAxisName, axisYName.c_str(), *getOutputDC(), DT_LEFT | DT_TOP);
+    app->setColor(app->systemSettings->TextColor, destDC);
+    app->drawText(rectYAxisName, axisYName.c_str(), destDC, DT_LEFT | DT_TOP);
 }
 
-void CoordinatSystemWindow::drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf)
+void CoordinatSystemWindow::drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf, M_HDC& destDc)
 {
     double outputNum = cellNull.y+ stepNum * cellStep.y;
     sprintf(textBuf, "%.2lf", outputNum);
@@ -231,14 +271,13 @@ void CoordinatSystemWindow::drawOneYLine(int stepNum, const Vector& cellStep, ch
 
     lineRect.finishPos.x = getSize().x;
     lineRect.finishPos.y = lineRect.pos.y;
-    M_HDC& _outDC = *getOutputDC();
 
-    app->line(lineRect, _outDC);
+    app->line(lineRect, destDc);
 
-    app->drawText(drawRect, textBuf, _outDC, DT_RIGHT);
+    app->drawText(drawRect, textBuf, destDc, DT_RIGHT);
 }
 
-void CoordinatSystemWindow::drawOneXLine(int stepNum, const Vector& cellStep, char* textBuf)
+void CoordinatSystemWindow::drawOneXLine(int stepNum, const Vector& cellStep, char* textBuf, M_HDC& destDc)
 {
     double outputNum = cellNull.x + stepNum * cellStep.x;
     sprintf(textBuf, "%.2lf", outputNum);
@@ -255,20 +294,11 @@ void CoordinatSystemWindow::drawOneXLine(int stepNum, const Vector& cellStep, ch
 
     lineRect.finishPos.x = pixPos.x;
     lineRect.finishPos.y = getSize().y;
-    M_HDC& _outDC = *getOutputDC();
 
-    app->line(lineRect, _outDC);
+    app->line(lineRect, destDc);
 
-    app->drawText(drawRect, textBuf, _outDC, DT_LEFT);
+    app->drawText(drawRect, textBuf, destDc, DT_LEFT);
 }
-
-int CoordinatSystemWindow::onSize(Vector managerSize, Rect _newRect/* = {}*/)
-{
-    Window::onSize(managerSize, _newRect);
-    return 0;
-}
-
-
 
 double CoordinatSystemWindow::humanRound(double delta)
 {

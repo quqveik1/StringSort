@@ -17,28 +17,38 @@ struct CoordinatSystemWindow : Window
     mutex pointsMutex;
     vector<Vector> points;
 
+    M_HDC axisSystemDC;
+
     Window* onClickListener = NULL;
 
     CoordinatSystemWindow(AbstractAppData* _app) :
-        Window(_app)
+        Window(_app),
+        axisSystemDC(_app)
     {
+    };
+
+    virtual ~CoordinatSystemWindow()
+    {
+        //axisSystemDC.deleteObj();
     };
 
     double humanRound(double delta);
 
-    void drawOneXLine(int stepNum, const Vector& cellStep, char* textBuf);
-    void drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf);
+    void drawOneXLine(int stepNum, const Vector& cellStep, char* textBuf, M_HDC& destDc);
+    void drawOneYLine(int stepNum, const Vector& cellStep, char* textBuf, M_HDC& destDc);
     virtual void drawPoints();
-    void drawAxisName();
+    void drawAxisName(M_HDC& destDC);
+
+    virtual void invalidateSysConfig();
 
     void setCCells(Vector _cScreenCells);
-    void setCellNull(Vector _cellNull)   { cellNull = _cellNull;           invalidateButton(); };
-    void setAxisColor(COLORREF _color)   { axisColor = _color;             invalidateButton(); };
-    void setAxisXName(string _axisXName)   { axisXName = _axisXName;      invalidateButton(); };
-    void setAxisYName(string _axisYName)   { axisYName = _axisYName;      invalidateButton(); };
-    void setPointsColor(COLORREF _color) { pointsColor = _color;           invalidateButton(); };
-    void setPointsR(int _r)              { pointsR = _r;                   invalidateButton(); };
-    void setOnClickListener(Window* _wnd) { onClickListener = _wnd;        invalidateButton(); };
+    void setCellNull(Vector _cellNull)     { cellNull = _cellNull;           invalidateSysConfig(); };
+    void setAxisColor(COLORREF _color)     { axisColor = _color;             invalidateSysConfig(); };
+    void setAxisXName(string _axisXName)   { axisXName = _axisXName;         invalidateSysConfig(); };
+    void setAxisYName(string _axisYName)   { axisYName = _axisYName;         invalidateSysConfig(); };
+    void setPointsColor(COLORREF _color)   { pointsColor = _color;           invalidateSysConfig(); };
+    void setPointsR(int _r)                { pointsR = _r;                   invalidateSysConfig(); };
+    void setOnClickListener(Window* _wnd)  { onClickListener = _wnd;         invalidateSysConfig(); };
 
     //-pix per cell
     Vector getDensity();
