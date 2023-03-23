@@ -249,12 +249,16 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
     //bottomSystem.clearSys();
     //topSystem.clearSys();
 
+    double maxQuadraticDelta = DBL_MIN;
+    double maxQuadraticDeltaK = DBL_MIN;
+    double maxQuadraticDeltaB = DBL_MIN;
+
     double minQuadraticDelta = DBL_MAX;
     int detalisationK = 1000;
-    int kDelta = abs(kBound.delta()) * detalisationK;
+    int kDelta = (int)abs(kBound.delta()) * detalisationK;
     double kStart = kBound.x * detalisationK;
 
-    int bDelta = abs(bBound.delta()) * detalisationK;
+    int bDelta = (int)abs(bBound.delta()) * detalisationK;
     double bStart = bBound.x * detalisationK;
 
     Vector topCellXBound = topSystem.getXCellBound();
@@ -279,6 +283,14 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
             minQuadraticDelta = currQuadraticDelta;
             *k = _k;
             *b = _b;
+        }
+
+        if (isSmaller(maxQuadraticDelta, currQuadraticDelta))
+        {
+            if (maxQuadraticDeltaK != DBL_MIN)
+            {
+                //bottomSystem.
+            }
         }
 
         COLORREF quadraticDeltaColor = getQuadraticDeltaColor(currQuadraticDelta);
@@ -308,9 +320,9 @@ COLORREF MainLinLayout::getQuadraticDeltaColor(double quadraticDelta)
 
     double t = (quadraticDelta - minQuadraticDelta) / rangeDelta;
 
-    int r2 = r0 + (double)(r1 - r0) * t;
+    int r2 = (int)r0 + (int)((double)(r1 - r0) * t);
     int g2 = 0;
-    int b2 = b0 + (double)(b1 - b0) * t;
+    int b2 = (int)b0 + (int)((double)(b1 - b0) * t);
 
 
     COLORREF answer = RGB(r2, g2, b2);

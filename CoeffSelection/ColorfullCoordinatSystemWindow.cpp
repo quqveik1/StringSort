@@ -2,23 +2,34 @@
 #include "ColorfullCoordinatSystemWindow.h"
 
 
-int ColorfullCoordinatSystemWindow::addPoint(Vector point, COLORREF pointColor/* = NULL*/)
+size_t ColorfullCoordinatSystemWindow::addPoint(Vector point, COLORREF pointColor/* = NULL*/)
 {
-    int res = CoordinatSystemWindow::addPoint(point);
+    size_t res = CoordinatSystemWindow::addPoint(point);
 
-    pointsColorArrMutex.lock();
     if (pointColor == 0) pointColor = pointsColor;
+    pointsColorArrMutex.lock();
     pointsColorArr.push_back(pointColor);
     pointsColorArrMutex.unlock();
     return res;
 }
 
+int ColorfullCoordinatSystemWindow::setPointColor(Vector point, COLORREF newColor/* = NULL*/)
+{
+    if (newColor == 0) newColor = pointsColor;
+    pointsMutex.lock();
+    pointsColorArrMutex.lock();
+    //int pos = std::find(points.begin(), points.end(), point);   
+    pointsMutex.unlock();
+    pointsColorArrMutex.unlock();
+    return newColor;
+}
 
-int ColorfullCoordinatSystemWindow::clearSys()
+
+size_t ColorfullCoordinatSystemWindow::clearSys()
 {
     try
     {
-        int _size = CoordinatSystemWindow::clearSys();
+        size_t _size = CoordinatSystemWindow::clearSys();
         pointsColorArrMutex.lock();
         if (pointsColorArr.size() > 0) pointsColorArr.clear();
         pointsColorArrMutex.unlock();
@@ -34,13 +45,13 @@ int ColorfullCoordinatSystemWindow::clearSys()
 
 void ColorfullCoordinatSystemWindow::drawPoints()
 {
-    int vectorSize = points.size();
+    size_t vectorSize = points.size();
     M_HDC& _outDC = *getOutputDC();
     
     COLORREF currColor = NULL;
     app->setColor(currColor, _outDC);
 
-    Vector halfSize = { pointsR, pointsR };
+    Vector halfSize = { (double)pointsR, (double)pointsR };
 
     pointsMutex.lock();
     pointsColorArrMutex.lock();

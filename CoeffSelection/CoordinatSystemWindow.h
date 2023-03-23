@@ -60,8 +60,8 @@ struct CoordinatSystemWindow : Window
 
     virtual Vector getXCellBound();
     virtual Vector getYCellBound();
-    virtual int addPoint(Vector point);
-    virtual int clearSys();
+    virtual size_t addPoint(Vector point);
+    virtual size_t clearSys();
 
     void draw() override;
     virtual void onClick(Vector mp) override;

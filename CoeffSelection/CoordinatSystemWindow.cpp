@@ -86,10 +86,10 @@ Vector CoordinatSystemWindow::getYCellBound()
 }
 
 
-int CoordinatSystemWindow::addPoint(Vector point)
+size_t CoordinatSystemWindow::addPoint(Vector point)
 {
     pointsMutex.lock();
-    int _size = points.size();
+    size_t _size = points.size();
 
     points.push_back(point);
     invalidateButton();
@@ -97,20 +97,21 @@ int CoordinatSystemWindow::addPoint(Vector point)
     return _size;
 }
 
-int CoordinatSystemWindow::clearSys()
+size_t CoordinatSystemWindow::clearSys()
 {
     try
     {
         pointsMutex.lock();
-        int _size = points.size();
+        size_t _size = points.size();
         if (points.size() > 0) points.clear();
         invalidateButton();
         pointsMutex.unlock();
         return _size;
     }
-    catch(const char* msg)
+    catch(...)
     {
-        cout << msg;
+        printf("Exception: %s", __FUNCTION__);
+        return 0;
     }
     return 0;
     
@@ -217,11 +218,11 @@ void CoordinatSystemWindow::onClick(Vector mp)
 
 void CoordinatSystemWindow::drawPoints()
 {
-    int vectorSize = points.size();
+    size_t vectorSize = points.size();
     M_HDC& _outDC = *getOutputDC();
     app->setColor(pointsColor, _outDC);
 
-    Vector halfSize = { pointsR, pointsR };
+    Vector halfSize = { (double)pointsR, (double)pointsR };
 
     pointsMutex.lock();
     for (int i = 0; i < vectorSize; i++)
