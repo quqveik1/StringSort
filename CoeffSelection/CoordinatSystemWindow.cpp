@@ -161,35 +161,42 @@ void CoordinatSystemWindow::draw()
 {
     if (true/*!isValidViewState()*/)
     {
+        int timestart = clock();
         Window::draw();
+        /*
         Vector pixStep = getPixCellStep();
         Vector cellStep = getHumanCellStep();
 
-        /*
+        
         char textNum[MAX_PATH] = {};
         app->setColor(axisColor, *getOutputDC());
         for (int x = 0; x <= lround(cCellsLines.x); x++)
         {
-            drawOneXLine(x, cellStep, textNum);
+            drawOneXLine(x, cellStep, textNum, getFinalDC());
         }
         for (int x = -1; x >= -lround(cCellsLines.x); x--)
         {
-            drawOneXLine(x, cellStep, textNum);
+            drawOneXLine(x, cellStep, textNum, getFinalDC());
         }
 
         for (int y = 0; y <= lround(cCellsLines.y); y++)
         {
-            drawOneYLine(y, cellStep, textNum);
+            drawOneYLine(y, cellStep, textNum, getFinalDC());
         }
         for (int y = -1; y >= -lround(cCellsLines.y); y--)
         {
-            drawOneYLine(y, cellStep, textNum);
+            drawOneYLine(y, cellStep, textNum, getFinalDC());
         }
 
-        drawAxisName();
+        drawAxisName(getFinalDC());
         */
+        
         app->bitBlt(*getOutputDC(), {}, axisSystemDC);
         drawPoints();
+
+        int timefinish = clock();
+
+        cout << "CoordinatSystemWindow::draw():" << timefinish - timestart << endl;
     }
 
 }

@@ -10,10 +10,13 @@ void GraphicInfoButton::onClick(Vector mp)
     if (faqFile)
     {
         shared_ptr<char> faqText;
-        long fileSize = app->getFileSize(faqFile);
+        int fileSize = app->getFileSize(faqFile) + 1;
         faqText.reset(new char[fileSize]);
 
         fread(faqText.get(), sizeof(char), fileSize, faqFile);
+        fclose(faqFile);
+
+        faqText.get()[fileSize] = 0;
 
         app->messageBox(faqText.get(), text);
     }
