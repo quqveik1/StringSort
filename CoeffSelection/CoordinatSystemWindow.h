@@ -61,6 +61,7 @@ struct CoordinatSystemWindow : Window
     virtual Vector getXCellBound();
     virtual Vector getYCellBound();
     virtual size_t addPoint(Vector point);
+    virtual size_t getPointsSize();
     virtual size_t clearSys();
 
     void draw() override;

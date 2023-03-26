@@ -1,13 +1,14 @@
 #pragma once 
-#include <TXLib.h>
 #include "QuickSortUnitTest.h"
 #include "QuickSort.cpp"
 #include <conio.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "..\ALGORITHMICPROJECT\Q_CoordinatSystem.h"
+#include "StringSortEngine.cpp"
+//#include "..\ALGORITHMICPROJECT\Q_CoordinatSystem.h"
 
+/*
 void startQuickSortUnitTest()
 {
     txCreateWindow(1000, 800);
@@ -54,6 +55,12 @@ void drawSortPoint(int* arr, int len, int (*cmp)(const void* obj1, const void* o
     randomFill(arr, len);
     quickSort(arr, len, sizeof(int), cmp);
     //sys1->drawCircle(getCCmps())
+
+}
+*/
+
+void startQuickSortUnitTest()
+{
 
 }
 

@@ -97,6 +97,15 @@ size_t CoordinatSystemWindow::addPoint(Vector point)
     return _size;
 }
 
+size_t CoordinatSystemWindow::getPointsSize()
+{
+    size_t _size = 0;
+    pointsMutex.lock();
+    _size = points.size();
+    pointsMutex.unlock();
+    return _size;
+}
+
 size_t CoordinatSystemWindow::clearSys()
 {
     try

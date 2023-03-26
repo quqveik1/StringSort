@@ -4,15 +4,19 @@
 #include "ColorfullCoordinatSystemWindow.h"
 #include <TextView.cpp>
 #include "GraphicInfoButton.cpp"
+#include "CustomRCoordinatSystemWindow.h"
 
 
 struct MainLinLayout : LinearLayout
 {
     ColorfullCoordinatSystemWindow topSystem = NULL;
-    ColorfullCoordinatSystemWindow bottomSystem = NULL;
+    CustomRCoordinatSystemWindow bottomSystem = NULL;
     COLORREF suggestedFncColor = C_LIGHTRED;
     COLORREF userSelectedFncColor = C_GREEN;
     Vector downLineSize = {};
+    int maxMinDeltaR = 10;
+    COLORREF minDeltaColor = C_LIGHTRED;
+    COLORREF maxDeltaColor = C_BLUE;
 
     LinearLayout topDescribtions;
     TextView topDescribtion1;
@@ -56,6 +60,7 @@ struct MainLinLayout : LinearLayout
     COLORREF getQuadraticDeltaColor(double quadraticDelta);
 
     void threadCoeffFinder(double* k, double* b, Vector& kBound, Vector& bBound, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x));
+    void changeAndPrintNewMaxOrMinDelta(double* curminMaxDelta, double currDelta, int* currIndex, COLORREF color);
     void startGradientComputation();
     void countGradientMap();
     void countOriginalFnc();

@@ -3,6 +3,7 @@
 #include <thread>
 #include <LinearLayout.cpp>
 #include <iostream>
+#include "CustomRCoordinatSystemWindow.cpp"
 
 
 double MainLinLayout::currOriginalK = 5;
@@ -244,21 +245,33 @@ double MainLinLayout::sinFnc(double k, double b, double x)
     return k * sin(b * x);
 }
 
+void MainLinLayout::changeAndPrintNewMaxOrMinDelta(double* curminMaxDelta, double currDelta, int* currIndex, COLORREF _color)
+{
+    if (*currIndex >= 0)
+    {
+        COLORREF _maxQuadraticDeltaColor = getQuadraticDeltaColor(*curminMaxDelta);
+        bottomSystem.setPointColor(*curminMaxDelta, _maxQuadraticDeltaColor);
+        bottomSystem.setPointR(*currIndex, 0);
+    }
+    *curminMaxDelta = currDelta;
+    *currIndex = bottomSystem.getPointsSize() - 1;
+
+    bottomSystem.setPointColor(*currIndex, _color);
+    bottomSystem.setPointR(*currIndex, maxMinDeltaR);
+}
+
 void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vector& bBound, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x))
 {
-    //bottomSystem.clearSys();
-    //topSystem.clearSys();
-
     double maxQuadraticDelta = DBL_MIN;
-    double maxQuadraticDeltaK = DBL_MIN;
-    double maxQuadraticDeltaB = DBL_MIN;
+    int    maxQuadraticDeltaIndex = -1;
 
     double minQuadraticDelta = DBL_MAX;
+    int    minQuadraticDeltaIndex = -1;
     int detalisationK = 1000;
     int kDelta = (int)abs(kBound.delta()) * detalisationK;
     double kStart = kBound.x * detalisationK;
 
-    int bDelta = (int)abs(bBound.delta()) * detalisationK;
+    int bDelta = (int)(abs(bBound.delta()) * (double)detalisationK);
     double bStart = bBound.x * detalisationK;
 
     Vector topCellXBound = topSystem.getXCellBound();
@@ -267,9 +280,15 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
     for (int i = 0; i < cCountingCoef; i++)
     {
         if (!app->getAppCondition()) break;
-        double currQuadraticDelta = 0;
+        double currQuadraticDelta = 0;         
+        if (detalisationK == 0 || cQuadraticDeltaCountingPoints == 0)
+        {
+            continue;
+        }
+
         double _k = ((rand() % kDelta) + kStart) / detalisationK;
         double _b = ((rand() % bDelta) + bStart) / detalisationK;
+
         double xDelta = abs(topCellXBoundLen / cQuadraticDeltaCountingPoints);
 
         for (double x = topCellXBound.x; x < topCellXBound.y; x += xDelta)
@@ -278,24 +297,22 @@ void MainLinLayout::threadCoeffFinder(double* k, double* b, Vector& kBound, Vect
             currQuadraticDelta += quadraticDelta;
         }
 
-        if (isBigger(minQuadraticDelta, currQuadraticDelta))
-        {
-            minQuadraticDelta = currQuadraticDelta;
-            *k = _k;
-            *b = _b;
-        }
-
-        if (isSmaller(maxQuadraticDelta, currQuadraticDelta))
-        {
-            if (maxQuadraticDeltaK != DBL_MIN)
-            {
-                //bottomSystem.
-            }
-        }
-
         COLORREF quadraticDeltaColor = getQuadraticDeltaColor(currQuadraticDelta);
         Vector point = { _k, _b };
         bottomSystem.addPoint(point, quadraticDeltaColor);
+
+        if (isSmaller(maxQuadraticDelta, currQuadraticDelta))
+        {
+            changeAndPrintNewMaxOrMinDelta(&maxQuadraticDelta, currQuadraticDelta, &maxQuadraticDeltaIndex, maxDeltaColor);
+        }
+
+        if (isBigger(minQuadraticDelta, currQuadraticDelta))
+        {
+            *k = _k;
+            *b = _b;
+
+            changeAndPrintNewMaxOrMinDelta(&minQuadraticDelta, currQuadraticDelta, &minQuadraticDeltaIndex, minDeltaColor);
+        }
     }
     wasAnswerFinded = true;
     countFncOnTopSystem(*k, *b, suggestedFncColor);
@@ -360,6 +377,8 @@ void MainLinLayout::countFncOnTopSystem(double k, double b, COLORREF _color/* = 
 void MainLinLayout::startGradientComputation()
 {
     int timeStart = clock();
+
+    //countGradientMap();
 
     thread executeThread(&MainLinLayout::countGradientMap, this);
     executeThread.detach();

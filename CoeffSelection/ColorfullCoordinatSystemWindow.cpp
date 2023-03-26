@@ -18,10 +18,31 @@ int ColorfullCoordinatSystemWindow::setPointColor(Vector point, COLORREF newColo
     if (newColor == 0) newColor = pointsColor;
     pointsMutex.lock();
     pointsColorArrMutex.lock();
-    //int pos = std::find(points.begin(), points.end(), point);   
+    //int pos = std::find(points.begin(), points.end(), point);  
+    int findedPos = app->findElement<Vector>(points, point);
+    if (findedPos >= 0)
+    {
+        pointsColorArr[findedPos] = newColor;
+    }
     pointsMutex.unlock();
     pointsColorArrMutex.unlock();
     return newColor;
+}
+
+int ColorfullCoordinatSystemWindow::setPointColor(int pos, COLORREF newColor/* = NULL*/)
+{
+    if (newColor == 0) newColor = pointsColor;
+    pointsColorArrMutex.lock();
+    size_t currPointsSize = pointsColorArr.size();
+    int fncRes = 0;
+    if (currPointsSize > pos)
+    {
+        pointsColorArr[pos] = newColor;
+        fncRes = 1;
+    }
+    pointsColorArrMutex.unlock();
+
+    return fncRes;
 }
 
 
