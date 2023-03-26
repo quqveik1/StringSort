@@ -42,6 +42,14 @@ struct MainLinLayout : LinearLayout
     double answerB = 0;
     bool wasAnswerFinded = false;
 
+    mutex  maxQuadraticDeltaMutex;
+    double maxQuadraticDelta = DBL_MIN;
+    int    maxQuadraticDeltaIndex = -1;
+
+    mutex  minQuadraticDeltaMutex;
+    double minQuadraticDelta = DBL_MAX;
+    int    minQuadraticDeltaIndex = -1;
+
     M_HDC onWindowMovingCopyDC;
 
     MainLinLayout(AbstractAppData* _app, Vector _startPos);
@@ -57,6 +65,9 @@ struct MainLinLayout : LinearLayout
     static double sinFnc(double k, double b, double x);
 
     double calcQuadratic(double k, double b, double x, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x));
+    double calcTotalQuadratic(double k, double b, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double start, double finish, double step);
+    double calcAndPrintTotalQuadratic(double k, double b, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double start, double finish, double step);
+
     COLORREF getQuadraticDeltaColor(double quadraticDelta);
 
     void threadCoeffFinder(double* k, double* b, Vector& kBound, Vector& bBound, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x));

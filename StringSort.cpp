@@ -103,8 +103,8 @@ int backToStartCmp(const void* str1, const void* str2)
 
     string* _str1 = *((string**)str1);
     string* _str2 = *((string**)str2);
-    int len1 = _str1->length();
-    int len2 = _str2->length();
+    int len1 = (int)_str1->length();
+    int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
 
     
@@ -134,8 +134,8 @@ int startToBackCmp(const void* str1, const void* str2)
 {
     string* _str1 = *((string**)str1);
     string* _str2 = *((string**)str2);
-    int len1 = _str1->length();
-    int len2 = _str2->length();
+    int len1 = (int)_str1->length();
+    int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
 
     int minLen = min(len1, len2);

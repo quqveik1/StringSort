@@ -3,5 +3,5 @@ FONTNAME = Arial;
 debugMode = -1;
 Thickness = 3;
 WindowStyle = -2146959360;
-SizeOfScreen.x = 1868.000000;
-SizeOfScreen.y = 745.000000;
+SizeOfScreen.x = 1097.000000;
+SizeOfScreen.y = 464.000000;

@@ -220,8 +220,10 @@ void CoordinatSystemWindow::onClick(Vector mp)
     cout << clickedCellPos.getStr();
 
     if (onClickListener)
-    {
-        onClickListener->sendMessage(NULL, &clickedCellPos);
+    {                          
+        char message[3]{};
+        sprintf(message, "%d", getMBCondition());
+        onClickListener->sendMessage(message, &clickedCellPos);
     }
 }
 
