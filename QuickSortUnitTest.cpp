@@ -59,9 +59,10 @@ void drawSortPoint(int* arr, int len, int (*cmp)(const void* obj1, const void* o
 }
 */
 
-void startQuickSortUnitTest()
+void drawQuickSortResults()
 {
-
+    StringSortEngine engine;
+    engine.startApp();
 }
 
 
@@ -112,8 +113,6 @@ void clearArr(int* arr, int len)
         arr[i] = {};
     }
 }
-
-
 
 
 void startCornerUnitTest()

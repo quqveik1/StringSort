@@ -3,6 +3,10 @@
 #include "SortStatistic.h"
 
 
+void testIntQuickSort(int* arr, int len)
+{
+    quickSort(arr, len, sizeof(int), cmpInt);
+}
 
 void quickSort(void* arr, int len, int elementSize, int (*cmp)(const void* obj1, const void* obj2))
 {

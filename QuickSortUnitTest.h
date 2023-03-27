@@ -2,6 +2,7 @@
 #include "QuickSort.h"
 
 void startQuickSortUnitTest();
+void drawQuickSortResults();
 void printQuickSortUnitTest(int* arr, int len, int (*cmp)(const void* obj1, const void* obj2));
 bool testQuickSort(int* arr, int len, int (*cmp)(const void* obj1, const void* obj2));
 bool isSorted(int* arr, int len, int (*cmp)(const void* obj1, const void* obj2));
