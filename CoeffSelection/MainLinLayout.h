@@ -5,6 +5,7 @@
 #include <TextView.cpp>
 #include "GraphicInfoButton.cpp"
 #include "CustomRCoordinatSystemWindow.h"
+#include "MultiLayCoordinatSystemWindow.h"
 
 
 struct MainLinLayout : LinearLayout
@@ -50,6 +51,13 @@ struct MainLinLayout : LinearLayout
     double minQuadraticDelta = DBL_MAX;
     int    minQuadraticDeltaIndex = -1;
 
+    mutex gradientDescentMutex;
+    double gradientDescentDelta = DBL_MAX;
+    int   gradientDescentIndex;
+    Vector gradientDescentPos;
+    double gradientDeltaX = 1e-6;
+    double gradientDeltaY = 1e-6;
+
     M_HDC onWindowMovingCopyDC;
 
     MainLinLayout(AbstractAppData* _app, Vector _startPos);
@@ -67,6 +75,8 @@ struct MainLinLayout : LinearLayout
     double calcQuadratic(double k, double b, double x, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x));
     double calcTotalQuadratic(double k, double b, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double start, double finish, double step);
     double calcAndPrintTotalQuadratic(double k, double b, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double start, double finish, double step);
+
+    void startGradientDescent();
 
     COLORREF getQuadraticDeltaColor(double quadraticDelta);
 

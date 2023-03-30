@@ -4,6 +4,7 @@
 #include <LinearLayout.cpp>
 #include <iostream>
 #include "CustomRCoordinatSystemWindow.cpp"
+#include "MultiLayCoordinatSystemWindow.cpp"
 
 
 double MainLinLayout::currOriginalK = 5;
@@ -115,6 +116,7 @@ void MainLinLayout::initDescribtions()
 void MainLinLayout::initDownLinLayout()
 {
     addWindow(downLinLayout);
+    downLinLayout.setMatchParentX(true);
 
     backGroundComputation.setText("Нет фоновых задач");
     backGroundComputation.setFont(30);
@@ -174,15 +176,30 @@ void MainLinLayout::onMessageRecieve(const char* name, void* data)
     }  
     if (!strcmp(name, "2"))
     {
-        Vector topCellXBound = topSystem.getXCellBound();
-        double topCellXBoundLen = topCellXBound.delta();
-
-        double xDelta = abs(topCellXBoundLen / cQuadraticDeltaCountingPoints);
-        double clickedQuadraticDelta = calcAndPrintTotalQuadratic(clickedCellPos.x, clickedCellPos.y, sinFnc, originalSinFnc, topCellXBound.x, topCellXBound.y, xDelta);
-        scoped_lock lock1(minQuadraticDeltaMutex);
-        changeAndPrintNewMaxOrMinDelta(&minQuadraticDelta, clickedQuadraticDelta, &minQuadraticDeltaIndex, minDeltaColor);
+        gradientDescentPos = clickedCellPos;
+        thread gradientDescentThread(&MainLinLayout::startGradientDescent, this);
+        /*
+        scoped_lock lock1(maxQuadraticDeltaMutex);
+        changeAndPrintNewMaxOrMinDelta(&maxQuadraticDelta, clickedQuadraticDelta, &maxQuadraticDeltaIndex, maxDeltaColor);
+        */
     }
 
+}
+
+
+void MainLinLayout::startGradientDescent()
+{
+
+    Vector topCellXBound = topSystem.getXCellBound();
+
+    double topCellXBoundLen = topCellXBound.delta();
+
+    double xDelta = abs(topCellXBoundLen / cQuadraticDeltaCountingPoints);
+    for (;;)
+    {
+        double clickedQuadraticDelta = calcAndPrintTotalQuadratic(gradientDescentPos.x, gradientDescentPos.y, sinFnc, originalSinFnc, topCellXBound.x, topCellXBound.y, xDelta);
+
+    }
 }
 
 void MainLinLayout::onCertainPointSelection(Vector clickedCellPos)
