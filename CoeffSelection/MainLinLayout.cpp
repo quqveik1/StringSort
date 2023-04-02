@@ -60,6 +60,7 @@ void MainLinLayout::initCoordinats()
     bottomSystem.setOnClickListener(this);
     bottomSystem.setAxisXName("K");
     bottomSystem.setAxisYName("B");
+    bottomSystem.addLay();
     addWindow(bottomSystem);
 }
 
@@ -176,8 +177,10 @@ void MainLinLayout::onMessageRecieve(const char* name, void* data)
     }  
     if (!strcmp(name, "2"))
     {
-        gradientDescentPos = clickedCellPos;
-        thread gradientDescentThread(&MainLinLayout::startGradientDescent, this);
+        
+        thread gradientDescentThread(&MainLinLayout::startGradientDescent, this, clickedCellPos);
+        gradientDescentThread.detach();
+
         /*
         scoped_lock lock1(maxQuadraticDeltaMutex);
         changeAndPrintNewMaxOrMinDelta(&maxQuadraticDelta, clickedQuadraticDelta, &maxQuadraticDeltaIndex, maxDeltaColor);
@@ -187,19 +190,38 @@ void MainLinLayout::onMessageRecieve(const char* name, void* data)
 }
 
 
-void MainLinLayout::startGradientDescent()
+void MainLinLayout::startGradientDescent(Vector _startPos)
 {
-
+    bottomSystem.clearLay(gradientCoorBottomSystemIndex);
+    gradientDescentPos = _startPos;
     Vector topCellXBound = topSystem.getXCellBound();
 
     double topCellXBoundLen = topCellXBound.delta();
 
     double xDelta = abs(topCellXBoundLen / cQuadraticDeltaCountingPoints);
-    for (;;)
+
+    bottomSystem.addPoint(gradientDescentPos, gradientDescentColor, gradientDescentR, gradientCoorBottomSystemIndex);
+
+    Vector learning_rate = {0.001, 0.00001};
+    int iterations = 100;
+    for (int i = 0; i < iterations; i++)
     {
-        double clickedQuadraticDelta = calcAndPrintTotalQuadratic(gradientDescentPos.x, gradientDescentPos.y, sinFnc, originalSinFnc, topCellXBound.x, topCellXBound.y, xDelta);
+        if (app->getAppCondition() == 0) break;
+        double currQuadraticDelta = calcTotalQuadratic(gradientDescentPos.x,                   gradientDescentPos.y,                   sinFnc, originalSinFnc, topCellXBound.x, topCellXBound.y, xDelta);
+        double dxQuadraticDelta =   calcTotalQuadratic(gradientDescentPos.x + gradientDelta.x, gradientDescentPos.y,                   sinFnc, originalSinFnc, topCellXBound.x, topCellXBound.y, xDelta);
+        double dyQuadraticDelta =   calcTotalQuadratic(gradientDescentPos.x,                   gradientDescentPos.y + gradientDelta.y, sinFnc, originalSinFnc, topCellXBound.x, topCellXBound.y, xDelta);
+        
+        double xDerivative = (dxQuadraticDelta - currQuadraticDelta) / gradientDelta.x;
+        double yDerivative = (dyQuadraticDelta - currQuadraticDelta) / gradientDelta.y;
+
+        gradientDescentPos.x -= learning_rate.x * xDerivative;
+        gradientDescentPos.y -= learning_rate.y * yDerivative;
+
+        bottomSystem.addPoint(gradientDescentPos, gradientDescentColor, gradientDescentR, gradientCoorBottomSystemIndex);
 
     }
+
+    cout << "gradientDescentPos: " << gradientDescentPos << endl;
 }
 
 void MainLinLayout::onCertainPointSelection(Vector clickedCellPos)
@@ -305,7 +327,7 @@ double MainLinLayout::calcAndPrintTotalQuadratic(double k, double b, double(*fnc
     currQuadraticDelta = calcTotalQuadratic(k, b, fnc, originalFnc, start, finish, step);
     COLORREF quadraticDeltaColor = getQuadraticDeltaColor(currQuadraticDelta);
     Vector point = { k, b };
-    bottomSystem.addPoint(point, quadraticDeltaColor);
+    bottomSystem.addPoint(point, quadraticDeltaColor, 0, 0, false);
 
     return currQuadraticDelta;
 }

@@ -11,7 +11,7 @@
 struct MainLinLayout : LinearLayout
 {
     ColorfullCoordinatSystemWindow topSystem = NULL;
-    CustomRCoordinatSystemWindow bottomSystem = NULL;
+    MultiLayCoordinatSystemWindow bottomSystem = NULL;
     COLORREF suggestedFncColor = C_LIGHTRED;
     COLORREF userSelectedFncColor = C_GREEN;
     Vector downLineSize = {};
@@ -53,10 +53,11 @@ struct MainLinLayout : LinearLayout
 
     mutex gradientDescentMutex;
     double gradientDescentDelta = DBL_MAX;
-    int   gradientDescentIndex;
     Vector gradientDescentPos;
-    double gradientDeltaX = 1e-6;
-    double gradientDeltaY = 1e-6;
+    Vector gradientDelta = { 1e-6, 1e-6 };
+    size_t gradientCoorBottomSystemIndex = 1;
+    COLORREF gradientDescentColor = C_BROWN;
+    int gradientDescentR = 10;
 
     M_HDC onWindowMovingCopyDC;
 
@@ -76,7 +77,7 @@ struct MainLinLayout : LinearLayout
     double calcTotalQuadratic(double k, double b, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double start, double finish, double step);
     double calcAndPrintTotalQuadratic(double k, double b, double(*fnc)(double k, double b, double x), double (*originalFnc)(double x), double start, double finish, double step);
 
-    void startGradientDescent();
+    void startGradientDescent(Vector _startPos);
 
     COLORREF getQuadraticDeltaColor(double quadraticDelta);
 
