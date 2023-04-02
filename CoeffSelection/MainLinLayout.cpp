@@ -92,8 +92,6 @@ void MainLinLayout::initDescribtions()
     topDescribtion3.setText("Зеленый - график, построенный по заданым вам коэффициентам");
     topDescribtions.addWindow(topDescribtion3);
 
-
-
     addWindow(bottomDescribtions);
 
     bottomDescribtion1.setColor(C_TRANSPARENT);
@@ -218,7 +216,6 @@ void MainLinLayout::startGradientDescent(Vector _startPos)
         gradientDescentPos.y -= learning_rate.y * yDerivative;
 
         bottomSystem.addPoint(gradientDescentPos, gradientDescentColor, gradientDescentR, gradientCoorBottomSystemIndex);
-
     }
 
     cout << "gradientDescentPos: " << gradientDescentPos << endl;
