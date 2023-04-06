@@ -1,6 +1,7 @@
 #pragma once
 #include <LinearLayout.cpp>
 #include <MultiLayCoordinatSystemWindow.cpp>
+#include <TextView.cpp>
 
 struct MainCoorLinLayout : LinearLayout
 {
@@ -14,21 +15,27 @@ struct MainCoorLinLayout : LinearLayout
     COLORREF logColor = C_LIGHTRED;
     COLORREF gradientLogColor = C_LIGHTGREEN;
     
-    Vector gradientOdds = { 1, 2 };// k = x, b = y
-
+    Vector topGradientOdds = { 1, 2 };// k = x, b = y
+    Vector bottomGradientOdds = { 1, 2 };// k = x, b = y
 
     bool isActiveComputingPart = true;
     const int updateFrequency = 5000;
     UINT_PTR activeTimer = 0;
 
+    TextView topOdd;
+    TextView bottomOdd;
+    
+
     MainCoorLinLayout(AbstractAppData* _app);
+
+    string oddsToString(Vector _odd);
 
     void startComputations();
     void randomArrFill(int* arr, int len);
 
-    void gradientDescent();
-    void drawGradientOdds();
-    double countQuadraticDelta(double k, double b);
+    void gradientDescent(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd);
+    void drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWindow& wnd);
+    double countQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd);
     double logfnc(double k, double b, double x);//k * log(bx)
 
     virtual int onSize(Vector _managerSize, Rect _newRect) override;
