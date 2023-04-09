@@ -35,19 +35,19 @@ void MainCoorLinLayout::initColorDescribtions()
 {
     addWindow(graficInfoLayout);
 
-    sortDataText.setText("Синий - данные функции сортировки");
+    sortDataText.setText("Циановый - данные функции сортировки");
     sortDataText.setWrapStatus(true);
     sortDataText.setTrancparencyOutput(true);
     sortDataText.setColor(C_TRANSPARENT);
     graficInfoLayout.addWindow(sortDataText);
 
-    logDataText.setText("Зеленый - подобранный логарифм");
+    logDataText.setText("Желтый - подобранный логарифм");
     logDataText.setWrapStatus(true);
     logDataText.setTrancparencyOutput(true);
     logDataText.setColor(C_TRANSPARENT);
     graficInfoLayout.addWindow(logDataText);
 
-    linDataText.setText("Фиолетовый - подобранная прямая");
+    linDataText.setText("Красный - подобранная прямая");
     linDataText.setWrapStatus(true);
     linDataText.setTrancparencyOutput(true);
     linDataText.setColor(C_TRANSPARENT);
@@ -173,6 +173,27 @@ string MainCoorLinLayout::linOddsToString(Vector _odd)
 
 void MainCoorLinLayout::startComputations()
 {
+    makeSortDataPoints();
+
+    monteCarlo(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc);
+    monteCarlo(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc);
+                                                                            
+    monteCarlo(bottomGradientLinOdds, bottomWnd, &MainCoorLinLayout::linfnc);
+    monteCarlo(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc);
+
+    gradientDescentOddsComputation();
+
+    drawGradientOdds(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc, gradientLinColor, linOddsLayIndex);
+    drawGradientOdds(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
+
+    drawGradientOdds(bottomGradientLinOdds, bottomWnd, &MainCoorLinLayout::linfnc, gradientLinColor, linOddsLayIndex);
+    drawGradientOdds(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
+
+    isActiveComputingPart = false;
+}   
+
+void MainCoorLinLayout::makeSortDataPoints()
+{
     int* arr = new int[maxArrLen] {};
     int start = clock();
     for (int _len = 1; _len <= maxArrLen; _len++)
@@ -192,31 +213,38 @@ void MainCoorLinLayout::startComputations()
     delete[] arr;
 
     cout << clock() - start << "ms заняли вычесления сложности сортировки\n";
-    setOddsToDescrbtion();
-
-    drawGradientOdds(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc, gradientLinColor, linOddsLayIndex);
-    drawGradientOdds(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
-
-    drawGradientOdds(bottomGradientLinOdds, bottomWnd, &MainCoorLinLayout::linfnc, gradientLinColor, linOddsLayIndex);
-    drawGradientOdds(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
-
-
-    //topOdd.setText(topGradientText.c_str());
-    /*
-    
-    double bottomDelta = gradientDescent(bottomGradientOdds, bottomWnd, &MainCoorLinLayout::logfnc);
-    static string bottomGradientText = oddsToString(bottomGradientOdds) + " с отклонением всего " + to_string(bottomDelta);;
-    bottomGradientText.insert(0, "Подошло ");
-    bottomOdd.setText(bottomGradientText.c_str());
-    */
-
-    //drawGradientOdds(topGradientOdds, topWnd, &MainCoorLinLayout::logfnc);
-    //drawGradientOdds(bottomGradientOdds, bottomWnd, &MainCoorLinLayout::logfnc);
-
-    isActiveComputingPart = false;
 }
 
-void MainCoorLinLayout::setOddsToDescrbtion()
+void MainCoorLinLayout::monteCarlo(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x))
+{
+    Vector oddsRange = { -20, 20 };
+    size_t oddsPresision = 1;
+
+    Vector currOdds = _odds;
+
+    Vector bestOdds = _odds;
+    double currMinQuadraticDelta = DBL_MAX;
+
+    int cIterations = (int)1e5;
+    for (int i = 0; i < cIterations; i++)
+    {
+        currOdds.x = app->generateRandom(oddsRange, oddsPresision);
+        currOdds.y = app->generateRandom(oddsRange, oddsPresision);
+
+        double quadraticDelta = computeQuadraticDelta(currOdds.x, currOdds.y, _wnd, fnc);
+
+        if (quadraticDelta < currMinQuadraticDelta)
+        {
+            currMinQuadraticDelta = quadraticDelta;
+            bestOdds = currOdds;
+        }
+    }
+
+    _odds = bestOdds;
+}
+
+
+void MainCoorLinLayout::gradientDescentOddsComputation()
 {
     double topLinDelta = gradientDescent(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc, linLearningRate);
     static string topLogText = linOddsToString(topGradientLinOdds) + " с отклонением всего " + to_string(topLinDelta);
@@ -250,9 +278,9 @@ double MainCoorLinLayout::gradientDescent(Vector& _odds, MultiLayCoordinatSystem
     for (int i = 0; i < iterations; i++)
     {
         if (!app->getAppCondition()) break;
-        double currQuadraticDelta = countQuadraticDelta(_odds.x, _odds.y, _wnd, fnc);
-        double dxQuadraticDelta = countQuadraticDelta(_odds.x + gradientDelta.x, _odds.y, _wnd, fnc);
-        double dyQuadraticDelta = countQuadraticDelta(_odds.x, _odds.y + gradientDelta.y, _wnd, fnc);
+        double currQuadraticDelta = computeQuadraticDelta(_odds.x, _odds.y, _wnd, fnc);
+        double dxQuadraticDelta = computeQuadraticDelta(_odds.x + gradientDelta.x, _odds.y, _wnd, fnc);
+        double dyQuadraticDelta = computeQuadraticDelta(_odds.x, _odds.y + gradientDelta.y, _wnd, fnc);
 
         double xDerivative = (dxQuadraticDelta - currQuadraticDelta) / gradientDelta.x;
         double yDerivative = (dyQuadraticDelta - currQuadraticDelta) / gradientDelta.y;
@@ -265,7 +293,7 @@ double MainCoorLinLayout::gradientDescent(Vector& _odds, MultiLayCoordinatSystem
 
     //cout << "На сортировку лучше всего ложится: " << oddsToString(_odds) << endl;
 
-    double finalQuadraticDelta = countQuadraticDelta(_odds.x, _odds.y, _wnd, fnc);
+    double finalQuadraticDelta = computeQuadraticDelta(_odds.x, _odds.y, _wnd, fnc);
 
     return finalQuadraticDelta;
 }
@@ -282,10 +310,10 @@ void MainCoorLinLayout::drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWi
     invalidateButton();
 }
 
-double MainCoorLinLayout::countQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x))
+double MainCoorLinLayout::computeQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x))
 {
     double answer = 0;
-    int len = (int)wnd.cCells.x;
+    int len = maxArrLen;
     for (int currLen = 1; currLen < len; currLen++)
     {       
         double fncRes = fnc(k, b, currLen);

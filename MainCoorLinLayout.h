@@ -5,21 +5,20 @@
 
 struct MainCoorLinLayout : LinearLayout
 {
-    const int maxArrLen = 500;
-    const int topWndScale = maxArrLen;
-    const int bottomWndScale = maxArrLen/5;
+    const int maxArrLen = 150;
+    const int topWndScale = 150;
+    const int bottomWndScale = 50;
     MultiLayCoordinatSystemWindow topWnd;
     MultiLayCoordinatSystemWindow bottomWnd;
     size_t sortDataIndex = 0;
     size_t linOddsLayIndex = 1;
     size_t logOddsLayIndex = 2;
-    COLORREF sortDataColor = C_LIGHTBLUE;
-    COLORREF logColor = C_LIGHTRED;
-    COLORREF gradientLogColor = C_LIGHTGREEN;
-    COLORREF gradientLinColor = C_MAGENTA;
+    COLORREF sortDataColor = C_LIGHTCYAN;
+    COLORREF gradientLogColor = C_YELLOW;
+    COLORREF gradientLinColor = C_LIGHTRED;
     
-    Vector logLearningRate = {1e-10, 1e-10};
-    Vector linLearningRate = {1e-8, 1e-8};
+    Vector logLearningRate = {1e-11, 1e-11};
+    Vector linLearningRate = {1e-9, 1e-9};
 
     Vector topGradientLogOdds = { 1, 2 };// k = x, b = y
     Vector topGradientLinOdds = { 1, 2 };// k = x, b = y
@@ -55,14 +54,16 @@ struct MainCoorLinLayout : LinearLayout
     void initDescribtions();
     void initColorDescribtions();
     void onPartDescribtion(LinearLayout& _layout, TextView& handle, TextView& _logFnc, TextView& _linFnc);
-    void setOddsToDescrbtion();
+    void gradientDescentOddsComputation();
 
     void startComputations();
+    void makeSortDataPoints();
+    void monteCarlo(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x));
     void randomArrFill(int* arr, int len);
 
     double gradientDescent(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x), Vector learningRate);
     void drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x), COLORREF graficColor, size_t layIndex);
-    double countQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x));
+    double computeQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x));
     static double logfnc(double k, double b, double x);//k * log(bx)
     static double linfnc(double k, double b, double x);//kx + b
 
