@@ -3,7 +3,7 @@
 
 struct StringSortEngine : AbstractAppData
 {
-    StringSortEngine() : AbstractAppData(NULL, "..\\TESTWIN32_GRAPHICAPP\\x64\\Debug") {};
+    StringSortEngine();
 
     virtual void onCreate(HWND window, UINT message, WPARAM wParam, LPARAM lParam) override;
 };

@@ -3,6 +3,12 @@
 #include <MainWindow.cpp>
 #include "MainCoorLinLayout.cpp"
 
+StringSortEngine::StringSortEngine() :
+    AbstractAppData(NULL, "..\\TESTWIN32_GRAPHICAPP\\x64\\Debug") 
+{
+    setAppName("Точные коэффициенты быстрой сортировки");
+};
+
 void StringSortEngine::onCreate(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
 {
     MainWindow* mainWnd = new MainWindow(this);

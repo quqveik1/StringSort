@@ -6,43 +6,62 @@
 struct MainCoorLinLayout : LinearLayout
 {
     const int maxArrLen = 500;
+    const int topWndScale = maxArrLen;
+    const int bottomWndScale = maxArrLen/5;
     MultiLayCoordinatSystemWindow topWnd;
     MultiLayCoordinatSystemWindow bottomWnd;
     size_t sortDataIndex = 0;
-    size_t logIndex = 1;
-    size_t suggestedOddsIndex = 2;
-    COLORREF sortDataColor = C_BLUE;
+    size_t linOddsLayIndex = 1;
+    size_t logOddsLayIndex = 2;
+    COLORREF sortDataColor = C_LIGHTBLUE;
     COLORREF logColor = C_LIGHTRED;
     COLORREF gradientLogColor = C_LIGHTGREEN;
+    COLORREF gradientLinColor = C_MAGENTA;
     
     Vector logLearningRate = {1e-10, 1e-10};
     Vector linLearningRate = {1e-8, 1e-8};
 
     Vector topGradientLogOdds = { 1, 2 };// k = x, b = y
     Vector topGradientLinOdds = { 1, 2 };// k = x, b = y
-    Vector bottomGradientOdds = { 1, 2 };// k = x, b = y
+    Vector bottomGradientLogOdds = { 1, 2 };// k = x, b = y
+    Vector bottomGradientLinOdds = { 1, 2 };// k = x, b = y
 
     bool isActiveComputingPart = true;
     const int updateFrequency = 5000;
     UINT_PTR activeTimer = 0;
 
-    LinearLayout topFncCmp;
+    LinearLayout topFncCmpLayout;
     TextView topHandle;
     TextView topLogFnc;
     TextView topLinFnc;
 
-    TextView bottomOdd;
+    LinearLayout bottomFncCmpLayout;
+    TextView bottomHandle;
+    TextView bottomLogFnc;
+    TextView bottomLinFnc;
+
+    LinearLayout graficInfoLayout;
+    TextView sortDataText;
+    TextView logDataText;
+    TextView linDataText;
     
 
     MainCoorLinLayout(AbstractAppData* _app);
 
-    string oddsToString(Vector _odd);
+    string logOddsToString(Vector _odd);
+    string linOddsToString(Vector _odd);
+
+    void initCoorSys();
+    void initDescribtions();
+    void initColorDescribtions();
+    void onPartDescribtion(LinearLayout& _layout, TextView& handle, TextView& _logFnc, TextView& _linFnc);
+    void setOddsToDescrbtion();
 
     void startComputations();
     void randomArrFill(int* arr, int len);
 
     double gradientDescent(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x), Vector learningRate);
-    void drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x));
+    void drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x), COLORREF graficColor, size_t layIndex);
     double countQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x));
     static double logfnc(double k, double b, double x);//k * log(bx)
     static double linfnc(double k, double b, double x);//kx + b

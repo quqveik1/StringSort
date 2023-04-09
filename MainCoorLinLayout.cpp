@@ -7,49 +7,169 @@ MainCoorLinLayout::MainCoorLinLayout(AbstractAppData* _app) :
     LinearLayout(_app, {}, LinearLayout::FLAG_VERTICAL),
     topWnd(_app),
     bottomWnd(_app),
-    topFncCmp(_app, {}, LinearLayout::FLAG_VERTICAL),
+    topFncCmpLayout(_app, {}, LinearLayout::FLAG_VERTICAL),
     topHandle(_app),
     topLogFnc(_app),
-    topLinFnc(_app),
-    bottomOdd(_app)
+    topLinFnc(_app), 
+    bottomFncCmpLayout(_app, {}, LinearLayout::FLAG_VERTICAL),
+    bottomHandle(_app),
+    bottomLogFnc(_app),
+    bottomLinFnc(_app),
+    graficInfoLayout(_app, {}, LinearLayout::FLAG_VERTICAL),
+    sortDataText(_app),
+    logDataText(_app),
+    linDataText(_app)
 {
     setMatchParent(true);
-    addWindow(topWnd);
-    topWnd.setCCells({ (double)maxArrLen, maxArrLen * log(maxArrLen) });
-    topWnd.setMatchParentX(true);
-    addWindow(bottomWnd);
-    bottomWnd.setCCells({ (double)maxArrLen, maxArrLen * log(maxArrLen) });
-    bottomWnd.setMatchParentX(true);
+    initCoorSys();
     activeTimer = app->setTimer(updateFrequency);
 
-    topWnd.addLay();
-    topWnd.addLay(); 
-    
-    bottomWnd.addLay();
-    bottomWnd.addLay();
-
-    topOdd.setWrapStatus(true);
-    topOdd.setColor(C_TRANSPARENT);
-    topOdd.setTrancparencyOutput(true);
-    topOdd.setText("Коэффициенты еще подбираются");
-    addWindow(topOdd);
-
-    bottomOdd.setWrapStatus(true);
-    bottomOdd.setColor(C_TRANSPARENT);
-    bottomOdd.setTrancparencyOutput(true);
-    bottomOdd.setText("Коэффициенты еще подбираются");
-    addWindow(bottomOdd);
+    initColorDescribtions();
+    initDescribtions();
 
     thread sortThread(&MainCoorLinLayout::startComputations, this);
     sortThread.detach();
 }
 
-string MainCoorLinLayout::oddsToString(Vector _odd)
+void MainCoorLinLayout::initColorDescribtions()
+{
+    addWindow(graficInfoLayout);
+
+    sortDataText.setText("Синий - данные функции сортировки");
+    sortDataText.setWrapStatus(true);
+    sortDataText.setTrancparencyOutput(true);
+    sortDataText.setColor(C_TRANSPARENT);
+    graficInfoLayout.addWindow(sortDataText);
+
+    logDataText.setText("Зеленый - подобранный логарифм");
+    logDataText.setWrapStatus(true);
+    logDataText.setTrancparencyOutput(true);
+    logDataText.setColor(C_TRANSPARENT);
+    graficInfoLayout.addWindow(logDataText);
+
+    linDataText.setText("Фиолетовый - подобранная прямая");
+    linDataText.setWrapStatus(true);
+    linDataText.setTrancparencyOutput(true);
+    linDataText.setColor(C_TRANSPARENT);
+    graficInfoLayout.addWindow(linDataText);
+
+}
+
+void MainCoorLinLayout::initCoorSys()
+{
+    addWindow(topWnd);
+    topWnd.setCCells({ (double)topWndScale, topWndScale * log(topWndScale) });
+    topWnd.setMatchParentX(true);
+    topWnd.setAxisXName("Размер массива");
+    topWnd.setAxisYName("Количество сравнений");
+
+    addWindow(bottomWnd);
+    bottomWnd.setCCells({ (double)bottomWndScale, bottomWndScale * log(bottomWndScale) });
+    bottomWnd.setMatchParentX(true);
+    bottomWnd.setAxisXName("Размер массива");
+    bottomWnd.setAxisYName("Количество обменов");
+
+    topWnd.addLay();
+    topWnd.addLay();
+
+    bottomWnd.addLay();
+    bottomWnd.addLay();
+}
+
+void MainCoorLinLayout::initDescribtions()
+{
+
+    onPartDescribtion(topFncCmpLayout, topHandle, topLogFnc, topLinFnc);
+    onPartDescribtion(bottomFncCmpLayout, bottomHandle, bottomLogFnc, bottomLinFnc);
+    /*
+    addWindow(topFncCmpLayout);
+
+    topHandle.setColor(C_TRANSPARENT);
+    topHandle.setTrancparencyOutput(true);
+    topHandle.setWrapStatus(true);
+    topHandle.setText("Коэффициенты, подобранные градиентным спуском:");
+    topHandle.setFormat(DT_LEFT);
+    topFncCmpLayout.addWindow(topHandle);
+
+    topLinFnc.setColor(C_TRANSPARENT);
+    topLinFnc.setTrancparencyOutput(true);
+    topLinFnc.setWrapStatus(true);
+    topLinFnc.setText("");
+    topLinFnc.setFormat(DT_LEFT);
+    topFncCmpLayout.addWindow(topLinFnc);
+
+    topLogFnc.setColor(C_TRANSPARENT);
+    topLogFnc.setTrancparencyOutput(true);
+    topLogFnc.setWrapStatus(true);
+    topLogFnc.setText("");
+    topLogFnc.setFormat(DT_LEFT);
+    topFncCmpLayout.addWindow(topLogFnc);
+    
+    addWindow(bottomFncCmpLayout);
+
+    bottomHandle.setColor(C_TRANSPARENT);
+    bottomHandle.setTrancparencyOutput(true);
+    bottomHandle.setWrapStatus(true);
+    bottomHandle.setText("Коэффициенты, подобранные градиентным спуском:");
+    bottomHandle.setFormat(DT_LEFT);
+    bottomFncCmpLayout.addWindow(bottomHandle);
+
+    bottomLinFnc.setColor(C_TRANSPARENT);
+    bottomLinFnc.setTrancparencyOutput(true);
+    bottomLinFnc.setWrapStatus(true);
+    bottomLinFnc.setText("");
+    bottomLinFnc.setFormat(DT_LEFT);
+    bottomFncCmpLayout.addWindow(bottomLinFnc);
+
+    bottomLogFnc.setColor(C_TRANSPARENT);
+    bottomLogFnc.setTrancparencyOutput(true);
+    bottomLogFnc.setWrapStatus(true);
+    bottomLogFnc.setText("");
+    bottomLogFnc.setFormat(DT_LEFT);
+    bottomFncCmpLayout.addWindow(topLogFnc);
+    */
+}
+
+void MainCoorLinLayout::onPartDescribtion(LinearLayout& _layout, TextView& handle, TextView& _logFnc, TextView& _linFnc)
+{
+    addWindow(_layout);
+
+    handle.setColor(C_TRANSPARENT);
+    handle.setTrancparencyOutput(true);
+    handle.setWrapStatus(true);
+    handle.setText("Сравнение:");
+    handle.setFormat(DT_LEFT);
+    _layout.addWindow(handle);
+
+    _linFnc.setColor(C_TRANSPARENT);
+    _linFnc.setTrancparencyOutput(true);
+    _linFnc.setWrapStatus(true);
+    _linFnc.setText("");
+    _linFnc.setFormat(DT_LEFT);
+    _layout.addWindow(_linFnc);
+
+    _logFnc.setColor(C_TRANSPARENT);
+    _logFnc.setTrancparencyOutput(true);
+    _logFnc.setWrapStatus(true);
+    _logFnc.setText("");
+    _logFnc.setFormat(DT_LEFT);
+    _layout.addWindow(_logFnc);
+}
+
+string MainCoorLinLayout::logOddsToString(Vector _odd)
 {
     string answer = {};
     answer = to_string(_odd.x) + "*x*log(" + to_string(_odd.y) + "*x)";
     return answer;
 }
+
+string MainCoorLinLayout::linOddsToString(Vector _odd)
+{
+    string answer = {};
+    answer = to_string(_odd.x) + "*x + " + to_string(_odd.y);
+    return answer;
+}
+
 
 void MainCoorLinLayout::startComputations()
 {
@@ -72,19 +192,14 @@ void MainCoorLinLayout::startComputations()
     delete[] arr;
 
     cout << clock() - start << "ms заняли вычесления сложности сортировки\n";
+    setOddsToDescrbtion();
 
-    double topDelta = gradientDescent(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc, logLearningRate);
-    static string topGradientText = oddsToString(topGradientLogOdds) + " с отклонением всего " + to_string(topDelta);
-    topGradientText.insert(0, "Подошло ");
-    cout << topGradientText;
-    drawGradientOdds(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc);
+    drawGradientOdds(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc, gradientLinColor, linOddsLayIndex);
+    drawGradientOdds(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
 
-    double topLinDelta = gradientDescent(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc, linLearningRate);
-    topGradientText = oddsToString(topGradientLinOdds) + " с отклонением всего " + to_string(topLinDelta);
-    topGradientText.insert(0, "Подошло ");
-    cout << topGradientText;
-    gradientLogColor = C_MAGENTA;
-    drawGradientOdds(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc);
+    drawGradientOdds(bottomGradientLinOdds, bottomWnd, &MainCoorLinLayout::linfnc, gradientLinColor, linOddsLayIndex);
+    drawGradientOdds(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
+
 
     //topOdd.setText(topGradientText.c_str());
     /*
@@ -99,6 +214,33 @@ void MainCoorLinLayout::startComputations()
     //drawGradientOdds(bottomGradientOdds, bottomWnd, &MainCoorLinLayout::logfnc);
 
     isActiveComputingPart = false;
+}
+
+void MainCoorLinLayout::setOddsToDescrbtion()
+{
+    double topLinDelta = gradientDescent(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc, linLearningRate);
+    static string topLogText = linOddsToString(topGradientLinOdds) + " с отклонением всего " + to_string(topLinDelta);
+    topLogText.insert(0, "Подошло ");
+    topLinFnc.setText(topLogText.c_str());
+
+    double topDelta = gradientDescent(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc, logLearningRate);
+    static string topGradientText = logOddsToString(topGradientLogOdds) + " с отклонением всего " + to_string(topDelta);
+    topGradientText.insert(0, "Подошло ");
+    topLogFnc.setText(topGradientText.c_str());
+
+    
+
+    double bottomLinDelta = gradientDescent(bottomGradientLinOdds, bottomWnd, &MainCoorLinLayout::linfnc, linLearningRate);
+    static string bottomLinText = linOddsToString(bottomGradientLinOdds) + " с отклонением всего " + to_string(bottomLinDelta);
+    bottomLinText.insert(0, "Подошло ");
+    bottomLinFnc.setText(bottomLinText.c_str());
+
+    double bottomLogDelta = gradientDescent(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc, logLearningRate);
+    static string bottomLogText = logOddsToString(bottomGradientLogOdds) + " с отклонением всего " + to_string(bottomLogDelta);
+    bottomLogText.insert(0, "Подошло ");
+    bottomLogFnc.setText(bottomLogText.c_str());
+
+
 }
 
 double MainCoorLinLayout::gradientDescent(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x), Vector learning_rate)
@@ -117,25 +259,25 @@ double MainCoorLinLayout::gradientDescent(Vector& _odds, MultiLayCoordinatSystem
 
         _odds.x -= learning_rate.x * xDerivative;
         _odds.y -= learning_rate.y * yDerivative;
-        printf("");
+        //printf("");
     }
     //printf("");
 
-    cout << "На сортировку лучше всего ложится: " << oddsToString(_odds) << endl;
+    //cout << "На сортировку лучше всего ложится: " << oddsToString(_odds) << endl;
 
     double finalQuadraticDelta = countQuadraticDelta(_odds.x, _odds.y, _wnd, fnc);
 
     return finalQuadraticDelta;
 }
 
-void MainCoorLinLayout::drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x))
+void MainCoorLinLayout::drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x), COLORREF graficColor, size_t layIndex)
 {
     for (int i = 0; i < maxArrLen; i++)
     {
         if (!app->getAppCondition()) break;
         Vector newPoint = { (double)i, fnc(_odds.x, _odds.y, i) };
 
-        wnd.addPoint(newPoint, gradientLogColor, 0, suggestedOddsIndex, false);
+        wnd.addPoint(newPoint, graficColor, 0, layIndex, false);
     }
     invalidateButton();
 }
@@ -143,7 +285,8 @@ void MainCoorLinLayout::drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWi
 double MainCoorLinLayout::countQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x))
 {
     double answer = 0;
-    for (int currLen = 1; currLen < maxArrLen; currLen++)
+    int len = (int)wnd.cCells.x;
+    for (int currLen = 1; currLen < len; currLen++)
     {       
         double fncRes = fnc(k, b, currLen);
         double delta = (fncRes - wnd.getPoint(currLen, sortDataIndex).y);
@@ -180,9 +323,11 @@ int MainCoorLinLayout::onSize(Vector _managerSize, Rect _newRect)
     bottomWnd.onSize({}, { .pos = {}, .finishPos = {getSize().x, getSize().y * 0.5} });
 
     int res = LinearLayout::onSize(_managerSize, _newRect);
-    topOdd.MoveWindowTo(topWnd.rect.pos);
-    bottomOdd.MoveWindowTo(bottomWnd.rect.pos);
-
+    topFncCmpLayout.MoveWindowTo(topWnd.rect.pos);
+    bottomFncCmpLayout.MoveWindowTo(bottomWnd.rect.pos);
+    Vector newPos = topWnd.rect.pos;
+    newPos.x = topWnd.rect.finishPos.x - graficInfoLayout.getSize().x;
+    graficInfoLayout.MoveWindowTo(newPos);
     return res;
 }
 
