@@ -1,0 +1,28 @@
+Start to back sorted text:
+0: "..acdef"
+1: "acdef"
+2: "bcdef"
+3: "dfdf"
+4: "fedca"
+5: "lkmne...!"
+6: "sfdf"
+
+-------------------------------------------------------------------------------------
+Back to start sorted text:
+0: "fedca"
+1: "lkmne...!"
+2: "dfdf"
+3: "sfdf"
+4: "..acdef"
+5: "acdef"
+6: "bcdef"
+
+-------------------------------------------------------------------------------------
+OriginalText:
+acdef
+..acdef
+lkmne...!
+bcdef
+fedca
+dfdf
+sfdf
