@@ -18,7 +18,8 @@ MainCoorLinLayout::MainCoorLinLayout(AbstractAppData* _app) :
     graficInfoLayout(_app, {}, LinearLayout::FLAG_VERTICAL),
     sortDataText(_app),
     logDataText(_app),
-    linDataText(_app)
+    linDataText(_app),
+    computionStatusText(_app)
 {
     setMatchParent(true);
     initCoorSys();
@@ -78,9 +79,13 @@ void MainCoorLinLayout::initCoorSys()
 
 void MainCoorLinLayout::initDescribtions()
 {
-
     onPartDescribtion(topFncCmpLayout, topHandle, topLogFnc, topLinFnc);
     onPartDescribtion(bottomFncCmpLayout, bottomHandle, bottomLogFnc, bottomLinFnc);
+
+    computionStatusText.setText("Идут вычисления...");
+    computionStatusText.setWrapStatus(true);
+    computionStatusText.setTrancparencyOutput(true);
+    addWindow(computionStatusText);
     /*
     addWindow(topFncCmpLayout);
 
@@ -190,6 +195,7 @@ void MainCoorLinLayout::startComputations()
     drawGradientOdds(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
 
     isActiveComputingPart = false;
+    computionStatusText.setText("Фоновых процессов нет");
 }   
 
 void MainCoorLinLayout::makeSortDataPoints()
@@ -307,7 +313,7 @@ void MainCoorLinLayout::drawGradientOdds(Vector _odds, MultiLayCoordinatSystemWi
 
         wnd.addPoint(newPoint, graficColor, 0, layIndex, false);
     }
-    invalidateButton();
+    wnd.invalidateButton();
 }
 
 double MainCoorLinLayout::computeQuadraticDelta(double k, double b, MultiLayCoordinatSystemWindow& wnd, double (*fnc) (double k, double b, double x))
@@ -316,6 +322,7 @@ double MainCoorLinLayout::computeQuadraticDelta(double k, double b, MultiLayCoor
     int len = maxArrLen;
     for (int currLen = 1; currLen < len; currLen++)
     {       
+        if (!app->getAppCondition()) break;
         double fncRes = fnc(k, b, currLen);
         double delta = (fncRes - wnd.getPoint(currLen, sortDataIndex).y);
         answer += delta * delta;
@@ -353,9 +360,17 @@ int MainCoorLinLayout::onSize(Vector _managerSize, Rect _newRect)
     int res = LinearLayout::onSize(_managerSize, _newRect);
     topFncCmpLayout.MoveWindowTo(topWnd.rect.pos);
     bottomFncCmpLayout.MoveWindowTo(bottomWnd.rect.pos);
+
     Vector newPos = topWnd.rect.pos;
     newPos.x = topWnd.rect.finishPos.x - graficInfoLayout.getSize().x;
     graficInfoLayout.MoveWindowTo(newPos);
+
+    Vector statusTextPos = getSize();
+    statusTextPos.x = 0;
+    statusTextPos.y -= computionStatusText.getSize().y;
+
+    computionStatusText.MoveWindowTo(statusTextPos);
+
     return res;
 }
 

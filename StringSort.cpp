@@ -26,7 +26,6 @@ void workWithText();
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
     drawQuickSortResults();
 }
 

@@ -43,7 +43,8 @@ struct MainCoorLinLayout : LinearLayout
     TextView sortDataText;
     TextView logDataText;
     TextView linDataText;
-    
+
+    TextView computionStatusText;
 
     MainCoorLinLayout(AbstractAppData* _app);
 
