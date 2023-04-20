@@ -1,6 +1,6 @@
 #pragma once 
 #include "QuickSortUnitTest.h"
-#include "QuickSort.cpp"
+#include "..\QuickSort.cpp"
 #include <conio.h>
 #include <time.h>
 #include <stdlib.h>

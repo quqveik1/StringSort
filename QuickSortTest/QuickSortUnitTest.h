@@ -1,5 +1,5 @@
 #pragma once
-#include "QuickSort.h"
+#include "..\QuickSort.h"
 
 void startQuickSortUnitTest();
 void drawQuickSortResults();

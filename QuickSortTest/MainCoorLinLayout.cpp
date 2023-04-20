@@ -1,6 +1,6 @@
 #pragma once
 #include "MainCoorLinLayout.h"
-#include "QuickSort.cpp"
+#include "..\QuickSort.cpp"
 #include <thread>
 
 MainCoorLinLayout::MainCoorLinLayout(AbstractAppData* _app) :

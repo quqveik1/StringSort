@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "QuickSortUnitTest.cpp"
 
 using namespace std;
 void readText(const string& path, string* originalfile);
@@ -26,7 +25,7 @@ void workWithText();
 
 int main()
 {
-    drawQuickSortResults();
+    //drawQuickSortResults();
 }
 
 void workWithText()
