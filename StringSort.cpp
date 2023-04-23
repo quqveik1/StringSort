@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <cctype>
+#include <sstream>
 
 using namespace std;
 void readText(const string& path, string* originalfile);
@@ -28,6 +29,10 @@ void save3TextsOriginalFnc(const char* path,
 
 int main()
 {
+    std::locale::global(std::locale(""));
+
+    bool res = isalnum('я');
+    bool res2 = isalnum('z');
     //drawQuickSortResults();
     workWithText();
 }
@@ -35,7 +40,6 @@ int main()
 void workWithText()
 {
     string path = "RusOnegin.txt";
-
 
     string fulltext;
     readText(path, &fulltext);
@@ -52,18 +56,6 @@ void workWithText()
     string** backToStartLines = new string * [stramount] {};
     copyOriginalTextForSort(textLines, backToStartLines, stramount);
     textSort(backToStartLines, stramount, backToStartCmp);
-
-    /*
-
-    cout << "Start to back sorted text:\n";
-    printLines(startToBackLines, stramount);
-
-    cout << "Back to start sorted text:\n";
-    printLines(backToStartLines, stramount);
-
-    saveText(startToBackLines, stramount, "startToBackLines.txt");
-    saveText(backToStartLines, stramount, "backToStartText.txt");
-    */
 
     save3TextsOriginalFnc("3Text.txt", startToBackLines, stramount, backToStartLines, stramount, fulltext);
 
@@ -215,7 +207,7 @@ int getNextAlnumPos(const string& strs, int startIndex, int maxSize, int increme
 
     for (int i = startIndex; i < maxSize && i >= 0; i += incrementDelta)
     {
-        if (isalnum(strs[i]))
+        if (isalnum((unsigned char)strs[i]))
         {
             return i;
         }
@@ -276,29 +268,15 @@ void fromOneCharToStrings(const string& text, string ptext[])
 
 void readText(const string& path, string* originalfile)
 {
-    struct stat buff;
-    stat(path.c_str(), &buff);
+    ifstream file(path);
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    stringstream stream;
 
-    int filesize = buff.st_size;
+    stream << file.rdbuf();
 
+    *originalfile = stream.str();
 
-    originalfile->reserve(filesize + 1);
-
-    FILE* file = fopen(path.c_str(), "r");
-    for (int i = 0; i < filesize; i++)
-    {           
-        char nextChar = getc(file);
-        if (nextChar != EOF)
-        {
-            originalfile->push_back(nextChar);
-        }
-        else
-        {
-            break;
-        }
-    }
-    fclose(file);
-
+    file.close();
 }
 
 
