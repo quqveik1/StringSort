@@ -1,4 +1,4 @@
-﻿// StringSort.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// StringSort.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -7,53 +7,54 @@
 #include <cctype>
 #include <sstream>
 
-using namespace std;
-void readText(const string& path, string* originalfile);
-int findEOLsN_(const string& text);
-void fromOneCharToStrings(const string& text, string ptext[]);
-void copyOriginalTextForSort(string* textLines, string** startToBackLines, int len);
-void bubbleTextSort(string** lines, int len, int (*cmp)(const void* str1, const void* str2));
-void textSort(string** lines, int len, int (*cmp)(const void* str1, const void* str2));
-void printLines(string** str, int len);
+void readText(const std::string& path, std::string* originalfile);
+int findEOLsN_(const std::string& text);
+void fromOneCharToStrings(const std::string& text, std::string ptext[]);
+void copyOriginalTextForSort(std::string* textLines, std::string** startToBackLines, int len);
+void bubbleTextSort(std::string** lines, int len, int (*cmp)(const void* str1, const void* str2));
+void textSort(std::string** lines, int len, int (*cmp)(const void* str1, const void* str2));
+void printLines(std::string** str, int len);
 int startToBackCmp(const void* str1, const void* str2);
 int backToStartCmp(const void* str1, const void* str2);
-void saveText(string** str, int len, const char* path);
-void saveText(string** str, int len, ofstream& stream);
+void saveText(std::string** str, int len, const char* path);
+void saveText(std::string** str, int len, std::ofstream& stream);
 void workWithText();
-int getNextAlnumPos(const string& strs, int startIndex, int maxSize, int incrementDelta);
+int getNextAlnumPos(const std::string& strs, int startIndex, int maxSize, int incrementDelta);
 void save3TextsOriginalFnc(const char* path, 
-                           string** startToBackLines, int startToBackLinesLen, 
-                           string** backToStartLines, int backToStartLinesLen,
-                           const string& fullText);
-
+                           std::string** startToBackLines, int startToBackLinesLen, 
+                           std::string** backToStartLines, int backToStartLinesLen,
+                           const std::string& fullText);
+bool isalnumRus(unsigned char c);
 
 int main()
 {
-    std::locale::global(std::locale(""));
+    //std::locale::global(std::locale(""));
+    setlocale(LC_ALL, "russian");
+    setlocale(LC_NUMERIC, "english");
 
-    bool res = isalnum('я');
-    bool res2 = isalnum('z');
+    bool res = isalnumRus(255);
+    bool res2 = isalnum((unsigned char)'�');
     //drawQuickSortResults();
     workWithText();
 }
 
 void workWithText()
 {
-    string path = "RusOnegin.txt";
+    std::string path = "RusOnegin.txt";
 
-    string fulltext;
+    std::string fulltext;
     readText(path, &fulltext);
 
     int stramount = findEOLsN_(fulltext) + 1;
 
-    string* textLines = new string[stramount]{};
+    std::string* textLines = new std::string[stramount]{};
     fromOneCharToStrings(fulltext, textLines);
 
-    string** startToBackLines = new string * [stramount] {};
+    std::string** startToBackLines = new std::string * [stramount] {};
     copyOriginalTextForSort(textLines, startToBackLines, stramount);
     textSort(startToBackLines, stramount, startToBackCmp);
 
-    string** backToStartLines = new string * [stramount] {};
+    std::string** backToStartLines = new std::string * [stramount] {};
     copyOriginalTextForSort(textLines, backToStartLines, stramount);
     textSort(backToStartLines, stramount, backToStartCmp);
 
@@ -64,12 +65,24 @@ void workWithText()
     delete[] backToStartLines;
 }
 
-void save3TextsOriginalFnc(const char* path, 
-                           string** startToBackLines, int startToBackLinesLen, 
-                           string** backToStartLines, int backToStartLinesLen, 
-                           const string& fullText)
+bool isalnumRus(unsigned char c)
 {
-    ofstream stream(path);
+    if (c >= 192 && c <= 255)
+    {
+        return true;
+    }
+    else
+    {
+        return isalnum(c);
+    }
+}
+
+void save3TextsOriginalFnc(const char* path, 
+                           std::string** startToBackLines, int startToBackLinesLen, 
+                           std::string** backToStartLines, int backToStartLinesLen, 
+                           const std::string& fullText)
+{
+    std::ofstream stream(path);
     if (stream.is_open())
     {
         stream << "Start to back sorted text:\n";
@@ -86,7 +99,7 @@ void save3TextsOriginalFnc(const char* path,
     stream.close();
 }
 
-void saveText(string** str, int len, ofstream& stream)
+void saveText(std::string** str, int len, std::ofstream& stream)
 {
     if (stream.is_open())
     {
@@ -97,9 +110,9 @@ void saveText(string** str, int len, ofstream& stream)
     }
 }
 
-void saveText(string** str, int len, const char* path)
+void saveText(std::string** str, int len, const char* path)
 {
-    ofstream stream(path);
+    std::ofstream stream(path);
 
     if (stream.is_open())
     {
@@ -111,17 +124,17 @@ void saveText(string** str, int len, const char* path)
     stream.close();
 }
 
-void printLines(const string** str, int len)
+void printLines(const std::string** str, int len)
 {
     for (int i = 0; i < len; i++)
     {
-        cout << i << ": \"" << *(str[i]) << "\"\n";
+        std::cout << i << ": \"" << *(str[i]) << "\"\n";
     }
 }
 
 
 
-void copyOriginalTextForSort(string* textLines, string** startToBackLines, int len)
+void copyOriginalTextForSort(std::string* textLines, std::string** startToBackLines, int len)
 {
     for (int i = 0; i < len; i++)
     {
@@ -132,13 +145,13 @@ void copyOriginalTextForSort(string* textLines, string** startToBackLines, int l
 
 int backToStartCmp(const void* str1, const void* str2)
 {
-    string* _str1 = *((string**)str1);
-    string* _str2 = *((string**)str2);
+    std::string* _str1 = *((std::string**)str1);
+    std::string* _str2 = *((std::string**)str2);
     int len1 = (int)_str1->length();
     int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
 
-    int minLen = min(len1, len2);
+    int minLen = std::min(len1, len2);
     int index1 = len1 - 1;
     int index2 = len2 - 1;
     for (int i = 1; i <= minLen; i++)
@@ -167,13 +180,13 @@ int backToStartCmp(const void* str1, const void* str2)
 
 int startToBackCmp(const void* str1, const void* str2)
 {
-    string* _str1 = *((string**)str1);
-    string* _str2 = *((string**)str2);
+    std::string* _str1 = *((std::string**)str1);
+    std::string* _str2 = *((std::string**)str2);
     int len1 = (int)_str1->length();
     int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
 
-    int minLen = min(len1, len2);
+    int minLen = std::min(len1, len2);
     int index1 = 0;
     int index2 = 0;
     for (int i = 0; i < minLen; i++)
@@ -201,7 +214,7 @@ int startToBackCmp(const void* str1, const void* str2)
     return 0;
 }
 
-int getNextAlnumPos(const string& strs, int startIndex, int maxSize, int incrementDelta)
+int getNextAlnumPos(const std::string& strs, int startIndex, int maxSize, int incrementDelta)
 {
     int answer = -1;
 
@@ -216,13 +229,13 @@ int getNextAlnumPos(const string& strs, int startIndex, int maxSize, int increme
     return answer;
 }
 
-void textSort(string** lines, int len, int (*cmp)(const void* str1, const void* str2))
+void textSort(std::string** lines, int len, int (*cmp)(const void* str1, const void* str2))
 {
-    qsort(lines, len, sizeof(string*), cmp);
+    qsort(lines, len, sizeof(std::string*), cmp);
 
 }
 
-void bubbleTextSort(string** lines, int len, int (*cmp)(const void* str1, const void* str2))
+void bubbleTextSort(std::string** lines, int len, int (*cmp)(const void* str1, const void* str2))
 {
 
     for (int j = 0; j < len; j++)
@@ -233,7 +246,7 @@ void bubbleTextSort(string** lines, int len, int (*cmp)(const void* str1, const 
 
             if (delta > 0)
             {
-                string* temp = lines[i];
+                std::string* temp = lines[i];
                 lines[i] = lines[i + 1];
                 lines[i + 1] = temp;
             }
@@ -242,7 +255,7 @@ void bubbleTextSort(string** lines, int len, int (*cmp)(const void* str1, const 
 }
 
 
-void fromOneCharToStrings(const string& text, string ptext[])
+void fromOneCharToStrings(const std::string& text, std::string ptext[])
 {
     int nlines = 0;
     int start = 0;
@@ -251,7 +264,7 @@ void fromOneCharToStrings(const string& text, string ptext[])
     {
         if (text[i] == '\0')
         {
-            //ptext[nlines] = new string{};
+            //ptext[nlines] = new std::string{};
             ptext[nlines] = text.substr(start, i - start);
             return;
         }
@@ -266,11 +279,11 @@ void fromOneCharToStrings(const string& text, string ptext[])
     }
 }
 
-void readText(const string& path, string* originalfile)
+void readText(const std::string& path, std::string* originalfile)
 {
-    ifstream file(path);
+    std::ifstream file(path);
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    stringstream stream;
+    std::stringstream stream;
 
     stream << file.rdbuf();
 
@@ -280,7 +293,7 @@ void readText(const string& path, string* originalfile)
 }
 
 
-int findEOLsN_(const string& text)
+int findEOLsN_(const std::string& text)
 {
     int nStr = 0;
     for (int i = 0; ; i++)
