@@ -13,25 +13,27 @@
 #include <io.h>
 
 
-void readText(const std::wstring& path, std::wstring* originalfile);
-int findEOLsN_(const std::wstring& text);
-void fromOneCharToStrings(const std::wstring& text, std::wstring ptext[]);
-void copyOriginalTextForSort(std::wstring* textLines, std::wstring** startToBackLines, int len);
+void readText(const std::wstring_view& path, std::wstring_view* originalfile);
+int findEOLsN_(const std::wstring_view& text);
+void fromOneCharToStrings(const std::wstring_view& text, std::wstring_view ptext[]);
+void copyOriginalTextForSort(std::wstring_view* textLines, std::wstring_view** startToBackLines, int len);
 void bubbleTextSort(std::wstring** lines, int len, int (*cmp)(const void* str1, const void* str2));
-void textSort(std::wstring** lines, int len, int (*cmp)(const void* str1, const void* str2));
+void textSort(std::wstring_view** lines, int len, int (*cmp)(const void* str1, const void* str2));
 void printLines(std::wstring** str, int len);
 int startToBackCmp(const void* str1, const void* str2);
 int backToStartCmp(const void* str1, const void* str2);
 void saveText(std::wstring** str, int len, const char* path);
 void saveText(std::wstring** str, int len, std::ofstream& stream);
+void saveText(std::wstring_view** str, int len, std::ofstream& stream);
 void saveText(std::wstring* str, int len, std::ofstream& stream);
-void saveString(const std::wstring& str, std::ofstream& stream);
+void saveText(std::wstring_view* str, int len, std::ofstream& stream);
+void saveString(const std::wstring_view& str, std::ofstream& stream);
 void workWithText();
-int getNextAlnumPos(const std::wstring& strs, int startIndex, int maxSize, int incrementDelta);
+int getNextAlnumPos(const std::wstring_view& strs, int startIndex, int maxSize, int incrementDelta);
 void save3TextsOriginalFnc(const char* path, 
-                           std::wstring** startToBackLines, int startToBackLinesLen, 
-                           std::wstring** backToStartLines, int backToStartLinesLen,
-                           std::wstring* fullTextLines);
+                           std::wstring_view** startToBackLines, int startToBackLinesLen,
+                           std::wstring_view** backToStartLines, int backToStartLinesLen,
+                           std::wstring_view* fullTextLines);
 bool isalnumRus(unsigned char c);
 
 int main()
@@ -43,23 +45,21 @@ void workWithText()
 {
     int res = _setmode(_fileno(stdout), _O_U16TEXT);
 
-    std::wstring path = L"Onegin.txt";
+    std::wstring_view path = L"Onegin.txt";
     
-    std::wstring fulltext(L"");
+    std::wstring_view fulltext(L"");
     readText(path, &fulltext);
 
     int stramount = findEOLsN_(fulltext) + 1;
 
-    //std::wcout << fulltext;
-
-    std::wstring* textLines = new std::wstring[stramount]{};
+    std::wstring_view* textLines = new std::wstring_view[stramount]{};
     fromOneCharToStrings(fulltext, textLines);
 
-    std::wstring** startToBackLines = new std::wstring * [stramount] {};
+    std::wstring_view** startToBackLines = new std::wstring_view* [stramount] {};
     copyOriginalTextForSort(textLines, startToBackLines, stramount);
     textSort(startToBackLines, stramount, startToBackCmp);
 
-    std::wstring** backToStartLines = new std::wstring * [stramount] {};
+    std::wstring_view** backToStartLines = new std::wstring_view* [stramount] {};
     copyOriginalTextForSort(textLines, backToStartLines, stramount);
     textSort(backToStartLines, stramount, backToStartCmp);
 
@@ -83,9 +83,9 @@ bool isalnumRus(unsigned char c)
 }
 
 void save3TextsOriginalFnc(const char* path, 
-                           std::wstring** startToBackLines, int startToBackLinesLen, 
-                           std::wstring** backToStartLines, int backToStartLinesLen, 
-                           std::wstring* fullTextLines)
+                           std::wstring_view** startToBackLines, int startToBackLinesLen,
+                           std::wstring_view** backToStartLines, int backToStartLinesLen,
+                           std::wstring_view* fullTextLines)
 {
     std::ofstream stream(path);
     if (stream.is_open())
@@ -104,6 +104,18 @@ void save3TextsOriginalFnc(const char* path,
     stream.close();
 }
 
+void saveText(std::wstring_view** str, int len, std::ofstream& stream)
+{
+    if (stream.is_open())
+    {
+        for (int i = 0; i < len; i++)
+        {
+            stream << i << ": \"";
+            saveString(*str[i], stream);
+            stream << "\"\n";
+        }
+    }
+} 
 void saveText(std::wstring** str, int len, std::ofstream& stream)
 {
     if (stream.is_open())
@@ -117,6 +129,19 @@ void saveText(std::wstring** str, int len, std::ofstream& stream)
     }
 }
  
+void saveText(std::wstring_view* str, int len, std::ofstream& stream)
+{
+    if (stream.is_open())
+    {
+        for (int i = 0; i < len; i++)
+        {
+            stream << i << ": \"";
+            saveString(str[i], stream);
+            stream << "\"\n";
+        }
+    }
+}    
+
 void saveText(std::wstring* str, int len, std::ofstream& stream)
 {
     if (stream.is_open())
@@ -130,15 +155,18 @@ void saveText(std::wstring* str, int len, std::ofstream& stream)
     }
 }
 
-void saveString(const std::wstring& str, std::ofstream& stream)
+void saveString(const std::wstring_view& str, std::ofstream& stream)
 {
     static std::string byteString;
-    int required_size = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, 0, 0, 0, 0);
-    std::vector<char> buffer(required_size);
-    WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, &buffer[0], required_size, 0, 0);
-    byteString = std::string(buffer.begin(), buffer.end() - 1);
+    int required_size = WideCharToMultiByte(CP_UTF8, 0, str.data(), str.size() + 1, 0, 0, 0, 0);
+    if (required_size > 0)
+    {
+        std::vector<char> buffer(required_size);
+        WideCharToMultiByte(CP_UTF8, 0, str.data(), str.size() + 1, &buffer[0], required_size, 0, 0);
+        byteString = std::string(buffer.begin(), buffer.end() - 1);
 
-    stream << byteString;
+        stream << byteString;
+    }
 }
 
 void saveText(std::wstring** str, int len, const char* path)
@@ -165,7 +193,7 @@ void printLines(const std::wstring** str, int len)
 
 
 
-void copyOriginalTextForSort(std::wstring* textLines, std::wstring** startToBackLines, int len)
+void copyOriginalTextForSort(std::wstring_view* textLines, std::wstring_view** startToBackLines, int len)
 {
     for (int i = 0; i < len; i++)
     {
@@ -176,8 +204,8 @@ void copyOriginalTextForSort(std::wstring* textLines, std::wstring** startToBack
 
 int backToStartCmp(const void* str1, const void* str2)
 {
-    std::wstring* _str1 = *((std::wstring**)str1);
-    std::wstring* _str2 = *((std::wstring**)str2);
+    std::wstring_view* _str1 = *((std::wstring_view**)str1);
+    std::wstring_view* _str2 = *((std::wstring_view**)str2);
     int len1 = (int)_str1->length();
     int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
@@ -211,8 +239,8 @@ int backToStartCmp(const void* str1, const void* str2)
 
 int startToBackCmp(const void* str1, const void* str2)
 {
-    std::wstring* _str1 = *((std::wstring**)str1);
-    std::wstring* _str2 = *((std::wstring**)str2);
+    std::wstring_view* _str1 = *((std::wstring_view**)str1);
+    std::wstring_view* _str2 = *((std::wstring_view**)str2);
     int len1 = (int)_str1->length();
     int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
@@ -245,7 +273,7 @@ int startToBackCmp(const void* str1, const void* str2)
     return 0;
 }
 
-int getNextAlnumPos(const std::wstring& strs, int startIndex, int maxSize, int incrementDelta)
+int getNextAlnumPos(const std::wstring_view& strs, int startIndex, int maxSize, int incrementDelta)
 {
     int answer = -1;
 
@@ -260,9 +288,9 @@ int getNextAlnumPos(const std::wstring& strs, int startIndex, int maxSize, int i
     return answer;
 }
 
-void textSort(std::wstring** lines, int len, int (*cmp)(const void* str1, const void* str2))
+void textSort(std::wstring_view** lines, int len, int (*cmp)(const void* str1, const void* str2))
 {
-    qsort(lines, len, sizeof(std::wstring*), cmp);
+    qsort(lines, len, sizeof(std::wstring_view*), cmp);
 }
 
 void bubbleTextSort(std::wstring** lines, int len, int (*cmp)(const void* str1, const void* str2))
@@ -285,7 +313,7 @@ void bubbleTextSort(std::wstring** lines, int len, int (*cmp)(const void* str1, 
 }
 
 
-void fromOneCharToStrings(const std::wstring& text, std::wstring ptext[])
+void fromOneCharToStrings(const std::wstring_view& text, std::wstring_view ptext[])
 {
     int nlines = 0;
     int start = 0;
@@ -294,7 +322,7 @@ void fromOneCharToStrings(const std::wstring& text, std::wstring ptext[])
     {
         if (start <= i)
         {
-            if (text[i] == '\0')
+            if (i == text.size())
             {
                 //ptext[nlines] = new std::wstring{};
                 ptext[nlines] = text.substr(start, i - start);
@@ -308,13 +336,12 @@ void fromOneCharToStrings(const std::wstring& text, std::wstring ptext[])
 
             }
         }
-
     }
 }
 
-void readText(const std::wstring& path, std::wstring* originalfile)
+void readText(const std::wstring_view& path, std::wstring_view* originalfile)
 {
-    std::ifstream file(path);
+    std::ifstream file(path.data());
     std::stringstream stream;
 
     stream << file.rdbuf();
@@ -326,24 +353,24 @@ void readText(const std::wstring& path, std::wstring* originalfile)
     std::vector<wchar_t> buffer(required_size);
     MultiByteToWideChar(CP_UTF8, 0, smallStr.c_str(), -1, &buffer[0], required_size);
 
-    *originalfile = std::wstring(buffer.begin(), buffer.end() - 1);
+    static std::wstring _str(buffer.begin(), buffer.end() - 1);
+
+    *originalfile = _str;
 }
 
 
-int findEOLsN_(const std::wstring& text)
+int findEOLsN_(const std::wstring_view& text)
 {
     int nStr = 0;
     for (int i = 0; ; i++)
     {
-        if (text[i] == '\n')
-        {
-            nStr++;
-
-
-        }
-        if (text[i] == '\0')
+        if (text.size() == i)
         {
             return nStr;
+        }
+        if (text[i] == L'\n')
+        {
+            nStr++;
         }
     }
     return nStr;
