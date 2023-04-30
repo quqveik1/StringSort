@@ -24,13 +24,14 @@ int startToBackCmp(const void* str1, const void* str2);
 int backToStartCmp(const void* str1, const void* str2);
 void saveText(std::wstring** str, int len, const char* path);
 void saveText(std::wstring** str, int len, std::ofstream& stream);
+void saveText(std::wstring* str, int len, std::ofstream& stream);
 void saveString(const std::wstring& str, std::ofstream& stream);
 void workWithText();
 int getNextAlnumPos(const std::wstring& strs, int startIndex, int maxSize, int incrementDelta);
 void save3TextsOriginalFnc(const char* path, 
                            std::wstring** startToBackLines, int startToBackLinesLen, 
                            std::wstring** backToStartLines, int backToStartLinesLen,
-                           const std::wstring& fullText);
+                           std::wstring* fullTextLines);
 bool isalnumRus(unsigned char c);
 
 int main()
@@ -62,7 +63,7 @@ void workWithText()
     copyOriginalTextForSort(textLines, backToStartLines, stramount);
     textSort(backToStartLines, stramount, backToStartCmp);
 
-    save3TextsOriginalFnc("3Text.txt", startToBackLines, stramount, backToStartLines, stramount, fulltext);
+    save3TextsOriginalFnc("3Text.txt", startToBackLines, stramount, backToStartLines, stramount, textLines);
 
     delete[] textLines;
     delete[] startToBackLines;
@@ -84,7 +85,7 @@ bool isalnumRus(unsigned char c)
 void save3TextsOriginalFnc(const char* path, 
                            std::wstring** startToBackLines, int startToBackLinesLen, 
                            std::wstring** backToStartLines, int backToStartLinesLen, 
-                           const std::wstring& fullText)
+                           std::wstring* fullTextLines)
 {
     std::ofstream stream(path);
     if (stream.is_open())
@@ -98,20 +99,32 @@ void save3TextsOriginalFnc(const char* path,
 
         stream << "\n-------------------------------------------------------------------------------------";
         stream << "\nOriginalText:\n";
-        saveString(fullText, stream);
+        saveText(fullTextLines, startToBackLinesLen, stream);
     }
     stream.close();
 }
 
 void saveText(std::wstring** str, int len, std::ofstream& stream)
 {
-    
     if (stream.is_open())
     {
         for (int i = 0; i < len; i++)
         {
             stream << i << ": \"";
             saveString(*str[i], stream);
+            stream << "\"\n";
+        }
+    }
+}
+ 
+void saveText(std::wstring* str, int len, std::ofstream& stream)
+{
+    if (stream.is_open())
+    {
+        for (int i = 0; i < len; i++)
+        {
+            stream << i << ": \"";
+            saveString(str[i], stream);
             stream << "\"\n";
         }
     }
