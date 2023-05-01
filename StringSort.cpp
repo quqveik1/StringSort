@@ -11,6 +11,7 @@
 #include <vector>
 #include <fcntl.h>
 #include <io.h>
+#include "QuickSort.cpp"
 
 
 void readText(const std::wstring_view& path, std::wstring_view* originalfile);
@@ -290,7 +291,7 @@ int getNextAlnumPos(const std::wstring_view& strs, int startIndex, int maxSize, 
 
 void textSort(std::wstring_view** lines, int len, int (*cmp)(const void* str1, const void* str2))
 {
-    qsort(lines, len, sizeof(std::wstring_view*), cmp);
+    quickSort(lines, len, sizeof(std::wstring_view*), cmp);
 }
 
 void bubbleTextSort(std::wstring** lines, int len, int (*cmp)(const void* str1, const void* str2))

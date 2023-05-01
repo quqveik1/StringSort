@@ -194,6 +194,8 @@ void MainCoorLinLayout::startComputations()
     drawGradientOdds(bottomGradientLinOdds, bottomWnd, &MainCoorLinLayout::linfnc, gradientLinColor, linOddsLayIndex);
     drawGradientOdds(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc, gradientLogColor, logOddsLayIndex);
 
+    invalidateButton();
+
     isActiveComputingPart = false;
     computionStatusText.setText("Фоновых процессов нет");
 }   

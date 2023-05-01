@@ -2,6 +2,7 @@
 #include "StringSortEngine.h"
 #include <MainWindow.cpp>
 #include "MainCoorLinLayout.cpp"
+#include "resource.h"
 
 StringSortEngine::StringSortEngine() :
     AbstractAppData(NULL, "..\\TESTWIN32_GRAPHICAPP\\x64\\Debug") 
@@ -16,5 +17,10 @@ void StringSortEngine::onCreate(HWND window, UINT message, WPARAM wParam, LPARAM
 
     MainCoorLinLayout* mainLayout = new MainCoorLinLayout(this);
     mainWnd->addWindow(mainLayout);
-    
+}
+
+void StringSortEngine::setWindowParameters(HINSTANCE hInstance)
+{
+    AbstractAppData::setWindowParameters(hInstance);
+    loadAndSetIcon(IDI_ICON1);
 }
