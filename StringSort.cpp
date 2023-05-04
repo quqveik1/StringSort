@@ -13,7 +13,6 @@
 #include <io.h>
 #include "QuickSort.cpp"
 
-
 void readText(const std::wstring_view& path, std::wstring_view* originalfile);
 int findEOLsN_(const std::wstring_view& text);
 void fromOneCharToStrings(const std::wstring_view& text, std::wstring_view ptext[]);
@@ -325,7 +324,6 @@ void fromOneCharToStrings(const std::wstring_view& text, std::wstring_view ptext
         {
             if (i == text.size())
             {
-                //ptext[nlines] = new std::wstring{};
                 ptext[nlines] = text.substr(start, i - start);
                 return;
             }
