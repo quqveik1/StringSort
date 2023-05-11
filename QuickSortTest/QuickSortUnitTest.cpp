@@ -114,7 +114,6 @@ void clearArr(int* arr, int len)
     }
 }
 
-
 void startCornerUnitTest()
 {
     char arr[10000] = {};
