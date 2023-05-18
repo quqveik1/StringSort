@@ -1,7 +1,7 @@
 //
 // Created by Kurlic on 11.05.2023.
 //
-
+#pragma once
 #include "WStringFnc.h"
 
 
@@ -32,6 +32,7 @@ void workWithText(std::wstring path_str, std::wstring destFileName)
     delete[] textLines;
     delete[] startToBackLines;
     delete[] backToStartLines;
+    delete fulltext.data();
 }
 
 
@@ -124,11 +125,11 @@ void saveText(std::wstring* str, int len, std::ofstream& stream)
 void saveString(const std::wstring_view& str, std::ofstream& stream)
 {
     static std::string byteString;
-    int required_size = WideCharToMultiByte(CP_UTF8, 0, str.data(), str.size() + 1, 0, 0, 0, 0);
+    int required_size = WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size() + 1, 0, 0, 0, 0);
     if (required_size > 0)
     {
         std::vector<char> buffer(required_size);
-        WideCharToMultiByte(CP_UTF8, 0, str.data(), str.size() + 1, &buffer[0], required_size, 0, 0);
+        WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size() + 1, &buffer[0], required_size, 0, 0);
         byteString = std::string(buffer.begin(), buffer.end() - 1);
 
         stream << byteString;
@@ -270,12 +271,12 @@ void readText(const std::wstring_view& path, std::wstring_view* originalfile)
     std::string smallStr = stream.str();
 
     int required_size = MultiByteToWideChar(CP_UTF8, 0, smallStr.c_str(), -1, nullptr, 0);
-    std::vector<wchar_t> buffer(required_size);
+    wchar_t* buffer = new wchar_t[required_size]{};
     MultiByteToWideChar(CP_UTF8, 0, smallStr.c_str(), -1, &buffer[0], required_size);
 
-    static std::wstring _str(buffer.begin(), buffer.end() - 1);
+    //std::wstring* _str = new std::wstring(buffer.begin(), buffer.end() - 1);
 
-    *originalfile = _str;
+    *originalfile = buffer;
 }
 
 
