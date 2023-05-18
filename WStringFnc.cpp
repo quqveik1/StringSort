@@ -14,10 +14,9 @@ void workWithText(std::wstring path_str, std::wstring destFileName)
     std::wstring_view fulltext(L"");
     readText(path, &fulltext);
 
-    int stramount = findEOLsN_(fulltext) + 1;
+    std::wstring_view* textLines = NULL;
 
-    std::wstring_view* textLines = new std::wstring_view[stramount]{};
-    fromOneCharToStrings(fulltext, textLines);
+    int stramount = separateTextByLinesToArr(fulltext, &textLines);
 
     std::wstring_view** startToBackLines = new std::wstring_view* [stramount] {};
     copyOriginalTextForSort(textLines, startToBackLines, stramount);
@@ -35,7 +34,14 @@ void workWithText(std::wstring path_str, std::wstring destFileName)
     delete fulltext.data();
 }
 
+int separateTextByLinesToArr(std::wstring_view& fullText, std::wstring_view** arr)
+{
+    int stramount = findEOLsN_(fullText) + 1;
+    *arr = new std::wstring_view[stramount]{};
+    fromOneCharToStrings(fullText, *arr);
 
+    return stramount;
+}
 
 bool isalnumRus(unsigned char c)
 {
