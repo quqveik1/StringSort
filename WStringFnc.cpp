@@ -3,6 +3,7 @@
 //
 #pragma once
 #include "WStringFnc.h"
+#include <exception>
 
 
 void workWithText(std::wstring path_str, std::wstring destFileName)
@@ -115,15 +116,19 @@ void saveText(std::wstring_view* str, int len, std::ofstream& stream)
     }
 }
 
-void saveText(std::wstring* str, int len, std::ofstream& stream)
+void saveText(std::wstring* str, int len, std::ofstream& stream, bool needToMark/* = true*/)
 {
     if (stream.is_open())
     {
         for (int i = 0; i < len; i++)
         {
-            stream << i << ": \"";
+            if(needToMark) stream << i << ": \"";
             saveString(str[i], stream);
-            stream << "\"\n";
+            if (needToMark) stream << "\"\n";
+            else
+            {
+                stream << "\n";
+            }
         }
     }
 }
@@ -141,6 +146,22 @@ void saveString(const std::wstring_view& str, std::ofstream& stream)
         stream << byteString;
     }
 }
+
+void saveString(const std::wstring& str, std::ofstream& stream)
+{
+    static std::string byteString;
+    int required_size = WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size() + 1, 0, 0, 0, 0);
+    if (required_size > 0)
+    {
+        std::vector<char> buffer(required_size);
+        WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size() + 1, &buffer[0], required_size, 0, 0);
+        byteString = std::string(buffer.begin(), buffer.end() - 1);
+
+        stream << byteString;
+    }
+}
+
+
 
 void saveText(std::wstring** str, int len, const char* path)
 {
@@ -269,6 +290,12 @@ void textSort(std::wstring_view** lines, int len, int (*cmp)(const void* str1, c
 void readText(const std::wstring_view& path, std::wstring_view* originalfile)
 {
     std::ifstream file(path.data());
+
+    if (!file.is_open())
+    {
+        throw std::exception("Файл для чтения не открылся");
+    }
+
     std::stringstream stream;
 
     stream << file.rdbuf();
