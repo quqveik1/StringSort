@@ -303,13 +303,16 @@ void readText(const std::wstring_view& path, std::wstring_view* originalfile)
 
     std::string smallStr = stream.str();
 
-    int required_size = MultiByteToWideChar(CP_UTF8, 0, smallStr.c_str(), -1, nullptr, 0);
-    wchar_t* buffer = new wchar_t[required_size]{};
-    MultiByteToWideChar(CP_UTF8, 0, smallStr.c_str(), -1, &buffer[0], required_size);
+    *originalfile = readStr(smallStr);
+}
 
-    //std::wstring* _str = new std::wstring(buffer.begin(), buffer.end() - 1);
+wchar_t* readStr(std::string& str)
+{
+    int required_size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    wchar_t* buffer = new wchar_t[required_size] {};
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &buffer[0], required_size);  
 
-    *originalfile = buffer;
+    return buffer;
 }
 
 
