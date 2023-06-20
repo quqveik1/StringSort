@@ -4,31 +4,39 @@
 
 #include <windows.h>
 
-
-void saveString(const std::wstring_view& str, std::ofstream& stream)
+wchar_t* readStr(std::string& str)
 {
-    static std::string byteString;
+    int required_size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    wchar_t* buffer = new wchar_t[required_size] {};
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &buffer[0], required_size);
+
+    return buffer;
+}
+
+
+template <typename TSTR>
+void _saveString(const TSTR& str, std::ofstream& stream)
+{
     int required_size = WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size(), 0, 0, 0, 0);
     if (required_size > 0)
     {
         std::vector<char> buffer(required_size);
         WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size(), &buffer[0], required_size, 0, 0);
-        byteString = std::string(buffer.begin(), buffer.end() - 1);
 
-        stream << byteString;
+        for (int i = 0; i < required_size; i++)
+        {
+            stream.put(buffer[i]);
+        }
     }
 }
 
+
 void saveString(const std::wstring& str, std::ofstream& stream)
 {
-    static std::string byteString;
-    int required_size = WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size() + 1, 0, 0, 0, 0);
-    if (required_size > 0)
-    {
-        std::vector<char> buffer(required_size);
-        WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size() + 1, &buffer[0], required_size, 0, 0);
-        byteString = std::string(buffer.begin(), buffer.end() - 1);
+    _saveString(str, stream);
+}
 
-        stream << byteString;
-    }
+void saveString(const std::wstring_view str, std::ofstream& stream)
+{
+    _saveString(str, stream);
 }

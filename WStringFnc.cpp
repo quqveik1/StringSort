@@ -6,7 +6,7 @@
 
 #include <exception>
 
-#include "StringCoding.h"
+#include "StringCoding.cpp"
 
 
 void workWithText(std::wstring path_str, std::wstring destFileName)
@@ -277,15 +277,6 @@ void readText(const std::wstring_view& path, std::wstring_view* originalfile)
     std::string smallStr = stream.str();
 
     *originalfile = readStr(smallStr);
-}
-
-wchar_t* readStr(std::string& str)
-{
-    int required_size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-    wchar_t* buffer = new wchar_t[required_size] {};
-    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &buffer[0], required_size);  
-
-    return buffer;
 }
 
 
