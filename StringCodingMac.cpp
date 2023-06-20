@@ -49,6 +49,11 @@ void saveString(const std::wstring_view str, std::ofstream& stream)
     _saveString(nullStr, stream);
 }
 
+void useNormalWideLocale()
+{
+    std::locale::global(std::locale("ru_RU.utf8"));
+}
+
 void useNormalLocale()
 {
     std::locale::global(std::locale(""));
