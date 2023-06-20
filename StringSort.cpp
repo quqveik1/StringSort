@@ -6,8 +6,7 @@
 
 int main()
 {
-    std::locale::global(std::locale(""));
-    setlocale(LC_ALL, "russian");
+    useNormalLocale();
 
     workWithText(L"ONEGIN.txt", L"3Text.txt");
 

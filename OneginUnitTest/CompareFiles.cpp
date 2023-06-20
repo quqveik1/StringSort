@@ -17,11 +17,11 @@ void compareFiles(std::wstring fileName1, std::wstring fileName2)
 
     if (compRes == 0)
     {
-        std::cout << "ÐÐ¾Ð²Ñ‹Ð¹ Ð¸ ÑÑ‚Ð°Ñ€Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» ÑÐ¾Ð²Ð¿Ð°Ð»Ð¸\n";
+        std::cout << "Íîâûé è ñòàðûé ôàéë ñîâïàëè\n";
     }
     else
     {
-        std::wcout << "ÐÐ¾Ð²Ñ‹Ð¹ Ð¸ ÑÑ‚Ð°Ñ€Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» ÐÐ• ÑÐ¾Ð²Ð¿Ð°Ð»Ð¸\n";
+        std::cout << "Íîâûé è ñòàðûé ôàéë íå ñîâïàëè\n";
     }
 
     delete view1.data();

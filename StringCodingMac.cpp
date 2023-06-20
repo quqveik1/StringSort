@@ -3,6 +3,7 @@
 #include "StringCoding.h"
 
 #include <exception>
+#include <locale>
 
 wchar_t* readStr(std::string& str)
 {
@@ -48,3 +49,7 @@ void saveString(const std::wstring_view str, std::ofstream& stream)
     _saveString(nullStr, stream);
 }
 
+void useNormalLocale()
+{
+    std::locale::global(std::locale(""));
+}
