@@ -8,10 +8,8 @@
 #include <cctype>
 #include <sstream>
 #include <locale>
-#include <Windows.h>
 #include <vector>
 #include <fcntl.h>
-#include <io.h>
 #include "QuickSort.cpp"
 
 void workWithText(std::wstring path_str, std::wstring destFileName);
@@ -33,8 +31,6 @@ void saveText(std::wstring** str, int len, std::ofstream& stream);
 void saveText(std::wstring_view** str, int len, std::ofstream& stream);
 void saveText(std::wstring* str, int len, std::ofstream& stream, bool needToMark = true);
 void saveText(std::wstring_view* str, int len, std::ofstream& stream);
-void saveString(const std::wstring_view& str, std::ofstream& stream);
-void saveString(const std::wstring& str, std::ofstream& stream);
 int getNextAlnumPos(const std::wstring_view& strs, int startIndex, int maxSize, int incrementDelta);
 void save3TextsOriginalFnc(std::wstring& path,
                            std::wstring_view** startToBackLines, int startToBackLinesLen,

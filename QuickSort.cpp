@@ -1,6 +1,6 @@
 #pragma once
 #include "QuickSort.h"
-#include "QuickSortTest\SortStatistic.h"
+#include "QuickSortTest/SortStatistic.h"
 
 
 void testIntQuickSort(int* arr, int len)
