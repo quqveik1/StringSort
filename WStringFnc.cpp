@@ -177,7 +177,7 @@ int backToStartCmp(const void* str1, const void* str2)
     int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
 
-    int minLen = min(len1, len2);
+    int minLen = std::min(len1, len2);
     int index1 = len1 - 1;
     int index2 = len2 - 1;
     for (int i = 1; i <= minLen; i++)
@@ -212,7 +212,7 @@ int startToBackCmp(const void* str1, const void* str2)
     int len2 = (int)_str2->length();
     int lenDelta = len2 - len1;
 
-    int minLen = min(len1, len2);
+    int minLen = std::min(len1, len2);
     int index1 = 0;
     int index2 = 0;
     for (int i = 0; i < minLen; i++)
@@ -266,7 +266,7 @@ void readText(const std::wstring_view& path, std::wstring_view* originalfile)
 
     if (!file.is_open())
     {
-        throw std::exception("���� ��� ������ �� ��������");
+        throw std::runtime_error("���� ��� ������ �� ��������");
     }
 
     std::stringstream stream;

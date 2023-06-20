@@ -1,6 +1,6 @@
 #pragma once
 
-#include "StringCodingWindows.h"
+#include "StringCoding.h"
 
 #include <windows.h>
 
