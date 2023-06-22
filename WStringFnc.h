@@ -28,8 +28,8 @@ int backToStartCmp(const void* str1, const void* str2);
 void saveText(std::wstring** str, int len, const char* path);
 void saveText(std::wstring** str, int len, std::ofstream& stream);
 void saveText(std::wstring_view** str, int len, std::ofstream& stream);
-void saveText(std::wstring* str, int len, std::ofstream& stream, bool needToMark = true);
-void saveText(std::wstring_view* str, int len, std::ofstream& stream);
+template <typename TS>
+void saveText(TS str, int len, std::ofstream& stream, bool needToMark = true);
 int getNextAlnumPos(const std::wstring_view& strs, int startIndex, int maxSize, int incrementDelta);
 void save3TextsOriginalFnc(std::wstring& path,
                            std::wstring_view** startToBackLines, int startToBackLinesLen,

@@ -106,20 +106,8 @@ void saveText(std::wstring** str, int len, std::ofstream& stream)
     }
 }
 
-void saveText(std::wstring_view* str, int len, std::ofstream& stream)
-{
-    if (stream.is_open())
-    {
-        for (int i = 0; i < len; i++)
-        {
-            stream << i << ": \"";
-            saveString(str[i], stream);
-            stream << "\"\n";
-        }
-    }
-}
-
-void saveText(std::wstring* str, int len, std::ofstream& stream, bool needToMark/* = true*/)
+template <typename TS>
+void saveText(TS str, int len, std::ofstream& stream, bool needToMark/* = true*/)
 {
     if (stream.is_open())
     {
