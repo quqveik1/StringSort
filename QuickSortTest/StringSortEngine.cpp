@@ -5,9 +5,8 @@
 #include "resource.h"
 
 StringSortEngine::StringSortEngine() :
-    AbstractAppData(NULL, "..\\TESTWIN32_GRAPHICAPP\\x64\\Debug") 
+    AbstractAppData(NULL, "..\\TESTWIN32_GRAPHICAPP\\x64\\Release") 
 {
-    setAppName("Точные коэффициенты быстрой сортировки");
 };
 
 void StringSortEngine::onCreate(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
@@ -23,4 +22,9 @@ void StringSortEngine::setWindowParameters(HINSTANCE hInstance)
 {
     AbstractAppData::setWindowParameters(hInstance);
     loadAndSetIcon(IDI_ICON1);
+
+    getStringResources().addResource(StringResources::Russian, "name", "Точные коэффициенты быстрой сортировки");
+    getStringResources().addResource(StringResources::English, "name", "The accurate coefficients for quicksort.");
+    std::string title = setAppInfoToString(getStringResources().getResource("name"));
+    setAppName(title);
 }

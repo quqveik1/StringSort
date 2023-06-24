@@ -254,7 +254,7 @@ void readText(const std::wstring_view& path, std::wstring_view* originalfile)
 
     if (!file.is_open())
     {
-        throw std::runtime_error("���� ��� ������ �� ��������");
+        throw std::runtime_error("Файл не открылся");
     }
 
     std::stringstream stream;

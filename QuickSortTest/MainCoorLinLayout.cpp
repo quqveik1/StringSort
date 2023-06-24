@@ -34,21 +34,31 @@ MainCoorLinLayout::MainCoorLinLayout(AbstractAppData* _app) :
 
 void MainCoorLinLayout::initColorDescribtions()
 {
+    // Добавляем строки в ресурсы
+    getApp().getStringResources().addCResource(StringResources::Russian, "sortDataText", "Циановый - данные функции сортировки");
+    getApp().getStringResources().addCResource(StringResources::English, "sortDataText", "Cyan - sort function data");
+
+    getApp().getStringResources().addCResource(StringResources::Russian, "logDataText", "Желтый - подобранный логарифм");
+    getApp().getStringResources().addCResource(StringResources::English, "logDataText", "Yellow - fitted logarithm");
+
+    getApp().getStringResources().addCResource(StringResources::Russian, "linDataText", "Красный - подобранная прямая");
+    getApp().getStringResources().addCResource(StringResources::English, "linDataText", "Red - fitted line");
+
     addWindow(graficInfoLayout);
 
-    sortDataText.setText("Циановый - данные функции сортировки");
+    sortDataText.setText(getApp().getStringResources().getCResource("sortDataText"));
     sortDataText.setWrapStatus(true);
     sortDataText.setTrancparencyOutput(true);
     sortDataText.setColor(C_TRANSPARENT);
     graficInfoLayout.addWindow(sortDataText);
 
-    logDataText.setText("Желтый - подобранный логарифм");
+    logDataText.setText(getApp().getStringResources().getCResource("logDataText"));
     logDataText.setWrapStatus(true);
     logDataText.setTrancparencyOutput(true);
     logDataText.setColor(C_TRANSPARENT);
     graficInfoLayout.addWindow(logDataText);
 
-    linDataText.setText("Красный - подобранная прямая");
+    linDataText.setText(getApp().getStringResources().getCResource("linDataText"));
     linDataText.setWrapStatus(true);
     linDataText.setTrancparencyOutput(true);
     linDataText.setColor(C_TRANSPARENT);
@@ -56,19 +66,33 @@ void MainCoorLinLayout::initColorDescribtions()
 
 }
 
+
 void MainCoorLinLayout::initCoorSys()
 {
+    // Добавляем строки в ресурсы
+    getApp().getStringResources().addCResource(StringResources::Russian, "topWndAxisX", "Размер массива");
+    getApp().getStringResources().addCResource(StringResources::English, "topWndAxisX", "Array size");
+
+    getApp().getStringResources().addCResource(StringResources::Russian, "topWndAxisY", "Количество сравнений");
+    getApp().getStringResources().addCResource(StringResources::English, "topWndAxisY", "Number of comparisons");
+
+    getApp().getStringResources().addCResource(StringResources::Russian, "bottomWndAxisX", "Размер массива");
+    getApp().getStringResources().addCResource(StringResources::English, "bottomWndAxisX", "Array size");
+
+    getApp().getStringResources().addCResource(StringResources::Russian, "bottomWndAxisY", "Количество обменов");
+    getApp().getStringResources().addCResource(StringResources::English, "bottomWndAxisY", "Number of exchanges");
+
     addWindow(topWnd);
     topWnd.setCCells({ (double)topWndScale, topWndScale * log(topWndScale) });
     topWnd.setMatchParentX(true);
-    topWnd.setAxisXName("Размер массива");
-    topWnd.setAxisYName("Количество сравнений");
+    topWnd.setAxisXName(getApp().getStringResources().getCResource("topWndAxisX"));
+    topWnd.setAxisYName(getApp().getStringResources().getCResource("topWndAxisY"));
 
     addWindow(bottomWnd);
     bottomWnd.setCCells({ (double)bottomWndScale, bottomWndScale * log(bottomWndScale) });
     bottomWnd.setMatchParentX(true);
-    bottomWnd.setAxisXName("Размер массива");
-    bottomWnd.setAxisYName("Количество обменов");
+    bottomWnd.setAxisXName(getApp().getStringResources().getCResource("bottomWndAxisX"));
+    bottomWnd.setAxisYName(getApp().getStringResources().getCResource("bottomWndAxisY"));
 
     topWnd.addLay();
     topWnd.addLay();
@@ -77,62 +101,24 @@ void MainCoorLinLayout::initCoorSys()
     bottomWnd.addLay();
 }
 
+
 void MainCoorLinLayout::initDescribtions()
 {
+    // Добавляем строки в ресурсы
+    getApp().getStringResources().addCResource(StringResources::Russian, "computationStatus", "Идут вычисления...");
+    getApp().getStringResources().addCResource(StringResources::English, "computationStatus", "Calculations are ongoing...");
+
+    // Добавляем строки в ресурсы
+    getApp().getStringResources().addCResource(StringResources::Russian, "comparison", "Сравнение:");
+    getApp().getStringResources().addCResource(StringResources::English, "comparison", "Comparison:");
+
     onPartDescribtion(topFncCmpLayout, topHandle, topLogFnc, topLinFnc);
     onPartDescribtion(bottomFncCmpLayout, bottomHandle, bottomLogFnc, bottomLinFnc);
 
-    computionStatusText.setText("Идут вычисления...");
+    computionStatusText.setText(getApp().getStringResources().getCResource("computationStatus"));
     computionStatusText.setWrapStatus(true);
     computionStatusText.setTrancparencyOutput(true);
     addWindow(computionStatusText);
-    /*
-    addWindow(topFncCmpLayout);
-
-    topHandle.setColor(C_TRANSPARENT);
-    topHandle.setTrancparencyOutput(true);
-    topHandle.setWrapStatus(true);
-    topHandle.setText("Коэффициенты, подобранные градиентным спуском:");
-    topHandle.setFormat(DT_LEFT);
-    topFncCmpLayout.addWindow(topHandle);
-
-    topLinFnc.setColor(C_TRANSPARENT);
-    topLinFnc.setTrancparencyOutput(true);
-    topLinFnc.setWrapStatus(true);
-    topLinFnc.setText("");
-    topLinFnc.setFormat(DT_LEFT);
-    topFncCmpLayout.addWindow(topLinFnc);
-
-    topLogFnc.setColor(C_TRANSPARENT);
-    topLogFnc.setTrancparencyOutput(true);
-    topLogFnc.setWrapStatus(true);
-    topLogFnc.setText("");
-    topLogFnc.setFormat(DT_LEFT);
-    topFncCmpLayout.addWindow(topLogFnc);
-    
-    addWindow(bottomFncCmpLayout);
-
-    bottomHandle.setColor(C_TRANSPARENT);
-    bottomHandle.setTrancparencyOutput(true);
-    bottomHandle.setWrapStatus(true);
-    bottomHandle.setText("Коэффициенты, подобранные градиентным спуском:");
-    bottomHandle.setFormat(DT_LEFT);
-    bottomFncCmpLayout.addWindow(bottomHandle);
-
-    bottomLinFnc.setColor(C_TRANSPARENT);
-    bottomLinFnc.setTrancparencyOutput(true);
-    bottomLinFnc.setWrapStatus(true);
-    bottomLinFnc.setText("");
-    bottomLinFnc.setFormat(DT_LEFT);
-    bottomFncCmpLayout.addWindow(bottomLinFnc);
-
-    bottomLogFnc.setColor(C_TRANSPARENT);
-    bottomLogFnc.setTrancparencyOutput(true);
-    bottomLogFnc.setWrapStatus(true);
-    bottomLogFnc.setText("");
-    bottomLogFnc.setFormat(DT_LEFT);
-    bottomFncCmpLayout.addWindow(topLogFnc);
-    */
 }
 
 void MainCoorLinLayout::onPartDescribtion(LinearLayout& _layout, TextView& handle, TextView& _logFnc, TextView& _linFnc)
@@ -142,24 +128,25 @@ void MainCoorLinLayout::onPartDescribtion(LinearLayout& _layout, TextView& handl
     handle.setColor(C_TRANSPARENT);
     handle.setTrancparencyOutput(true);
     handle.setWrapStatus(true);
-    handle.setText("Сравнение:");
+    handle.setText(getApp().getStringResources().getCResource("comparison"));
     handle.setFormat(DT_LEFT);
     _layout.addWindow(handle);
 
     _linFnc.setColor(C_TRANSPARENT);
     _linFnc.setTrancparencyOutput(true);
     _linFnc.setWrapStatus(true);
-    _linFnc.setText("");
+    _linFnc.setText(""); // Если нужно добавить текст, добавьте его сюда
     _linFnc.setFormat(DT_LEFT);
     _layout.addWindow(_linFnc);
 
     _logFnc.setColor(C_TRANSPARENT);
     _logFnc.setTrancparencyOutput(true);
     _logFnc.setWrapStatus(true);
-    _logFnc.setText("");
+    _logFnc.setText(""); // Если нужно добавить текст, добавьте его сюда
     _logFnc.setFormat(DT_LEFT);
     _layout.addWindow(_logFnc);
 }
+
 
 string MainCoorLinLayout::logOddsToString(Vector _odd)
 {
@@ -197,7 +184,11 @@ void MainCoorLinLayout::startComputations()
     invalidateButton();
 
     isActiveComputingPart = false;
-    computionStatusText.setText("Фоновых процессов нет");
+
+    getApp().getStringResources().addCResource(StringResources::Russian, "noBackgroundProcesses", "Фоновых процессов нет");
+    getApp().getStringResources().addCResource(StringResources::English, "noBackgroundProcesses", "No background processes");
+
+    computionStatusText.setText(getApp().getStringResources().getCResource("noBackgroundProcesses"));
 }   
 
 void MainCoorLinLayout::makeSortDataPoints()
@@ -251,33 +242,34 @@ void MainCoorLinLayout::monteCarlo(Vector& _odds, MultiLayCoordinatSystemWindow&
     _odds = bestOdds;
 }
 
-
 void MainCoorLinLayout::gradientDescentOddsComputation()
 {
+    getApp().getStringResources().addCResource(StringResources::Russian, "fitted", "Подошло ");
+    getApp().getStringResources().addCResource(StringResources::English, "fitted", "Fitted ");
+    getApp().getStringResources().addCResource(StringResources::Russian, "withDeviation", "с отклонением всего");
+    getApp().getStringResources().addCResource(StringResources::English, "withDeviation", "with a total deviation of");
+
     double topLinDelta = gradientDescent(topGradientLinOdds, topWnd, &MainCoorLinLayout::linfnc, linLearningRate);
-    static string topLogText = linOddsToString(topGradientLinOdds) + " с отклонением всего " + to_string(topLinDelta);
-    topLogText.insert(0, "Подошло ");
+    static string topLogText = linOddsToString(topGradientLinOdds) + " " + getApp().getStringResources().getCResource("withDeviation") + " " + to_string(topLinDelta);
+    topLogText.insert(0, getApp().getStringResources().getCResource("fitted"));
     topLinFnc.setText(topLogText.c_str());
 
     double topDelta = gradientDescent(topGradientLogOdds, topWnd, &MainCoorLinLayout::logfnc, logLearningRate);
-    static string topGradientText = logOddsToString(topGradientLogOdds) + " с отклонением всего " + to_string(topDelta);
-    topGradientText.insert(0, "Подошло ");
+    static string topGradientText = logOddsToString(topGradientLogOdds) + " " + getApp().getStringResources().getCResource("withDeviation") + " " + to_string(topDelta);
+    topGradientText.insert(0, getApp().getStringResources().getCResource("fitted"));
     topLogFnc.setText(topGradientText.c_str());
 
-    
-
     double bottomLinDelta = gradientDescent(bottomGradientLinOdds, bottomWnd, &MainCoorLinLayout::linfnc, linLearningRate);
-    static string bottomLinText = linOddsToString(bottomGradientLinOdds) + " с отклонением всего " + to_string(bottomLinDelta);
-    bottomLinText.insert(0, "Подошло ");
+    static string bottomLinText = linOddsToString(bottomGradientLinOdds) + " " + getApp().getStringResources().getCResource("withDeviation") + " " + to_string(bottomLinDelta);
+    bottomLinText.insert(0, getApp().getStringResources().getCResource("fitted"));
     bottomLinFnc.setText(bottomLinText.c_str());
 
     double bottomLogDelta = gradientDescent(bottomGradientLogOdds, bottomWnd, &MainCoorLinLayout::logfnc, logLearningRate);
-    static string bottomLogText = logOddsToString(bottomGradientLogOdds) + " с отклонением всего " + to_string(bottomLogDelta);
-    bottomLogText.insert(0, "Подошло ");
+    static string bottomLogText = logOddsToString(bottomGradientLogOdds) + " " + getApp().getStringResources().getCResource("withDeviation") + " " + to_string(bottomLogDelta);
+    bottomLogText.insert(0, getApp().getStringResources().getCResource("fitted"));
     bottomLogFnc.setText(bottomLogText.c_str());
-
-
 }
+
 
 double MainCoorLinLayout::gradientDescent(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x), Vector learning_rate)
 {
