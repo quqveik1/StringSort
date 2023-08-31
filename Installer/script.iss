@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Quick Sort Graphic"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "Kurlic"
 #define MyAppURL "https://github.com/quqveik1/StringSort/"
 #define MyAppExeName "QuickSortTest.exe"

@@ -248,13 +248,14 @@ void textSort(std::wstring_view** lines, int len, int (*cmp)(const void* str1, c
     quickSort(lines, len, sizeof(std::wstring_view*), cmp);
 }
 
-void readText(const std::wstring_view& path, std::wstring_view* originalfile)
+template<typename PATHSTR>
+void readText(PATHSTR& path, std::wstring_view* originalfile)
 {
     std::ifstream file(path.data());
 
     if (!file.is_open())
     {
-        throw std::runtime_error("Файл не открылся");
+        throw std::runtime_error("File wasn't opened");
     }
 
     std::stringstream stream;
@@ -266,7 +267,6 @@ void readText(const std::wstring_view& path, std::wstring_view* originalfile)
 
     *originalfile = readStr(smallStr);
 }
-
 
 void bubbleTextSort(std::wstring** lines, int len, int (*cmp)(const void* str1, const void* str2))
 {
@@ -298,12 +298,12 @@ void fromOneCharToStrings(const std::wstring_view& text, std::wstring_view ptext
         {
             if (i == text.size())
             {
-                ptext[nlines] = text.substr(start, i - start);
+                ptext[nlines] = text.substr(start, (size_t)i - (size_t)start);
                 return;
             }
             if (text[i] == '\n')
             {
-                ptext[nlines] = text.substr(start, i - start);
+                ptext[nlines] = text.substr(start, (size_t)i - (size_t)start);
                 nlines++;
                 start = i + 1;
             }

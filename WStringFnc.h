@@ -15,7 +15,9 @@
 void workWithText(std::wstring path_str, std::wstring destFileName);
 
 //you need to delete data from originalfile
-void readText(const std::wstring_view& path, std::wstring_view* originalfile);
+
+template<typename PATHSTR>
+void readText(PATHSTR& path, std::wstring_view* originalfile);
 int findEOLsN_(const std::wstring_view& text);
 int separateTextByLinesToArr(std::wstring_view& fullText, std::wstring_view** arr);
 void fromOneCharToStrings(const std::wstring_view& text, std::wstring_view ptext[]);
