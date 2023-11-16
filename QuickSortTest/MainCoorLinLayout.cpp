@@ -3,6 +3,7 @@
 #include "..\QuickSort.cpp"
 #include <thread>
 
+
 MainCoorLinLayout::MainCoorLinLayout(AbstractAppData* _app) :
     LinearLayout(_app, {}, LinearLayout::FLAG_VERTICAL),
     topWnd(_app),
@@ -135,18 +136,15 @@ void MainCoorLinLayout::onPartDescribtion(LinearLayout& _layout, TextView& handl
     _linFnc.setColor(C_TRANSPARENT);
     _linFnc.setTrancparencyOutput(true);
     _linFnc.setWrapStatus(true);
-    _linFnc.setText(""); // Если нужно добавить текст, добавьте его сюда
     _linFnc.setFormat(DT_LEFT);
     _layout.addWindow(_linFnc);
 
     _logFnc.setColor(C_TRANSPARENT);
     _logFnc.setTrancparencyOutput(true);
     _logFnc.setWrapStatus(true);
-    _logFnc.setText(""); // Если нужно добавить текст, добавьте его сюда
     _logFnc.setFormat(DT_LEFT);
     _layout.addWindow(_logFnc);
 }
-
 
 string MainCoorLinLayout::logOddsToString(Vector _odd)
 {
@@ -161,7 +159,6 @@ string MainCoorLinLayout::linOddsToString(Vector _odd)
     answer = to_string(_odd.x) + "*x + " + to_string(_odd.y);
     return answer;
 }
-
 
 void MainCoorLinLayout::startComputations()
 {
@@ -203,15 +200,13 @@ void MainCoorLinLayout::makeSortDataPoints()
         double logres = _len * log(_len);
 
         topWnd.addPoint({ (double)_len, (double)getCCmps() }, sortDataColor, 0, sortDataIndex, false);
-        //topWnd.addPoint({ (double)_len, logres }, logColor, 0, logIndex, false);
         bottomWnd.addPoint({ (double)_len, (double)getCExchanges() }, sortDataColor, 0, sortDataIndex, false);
-        //bottomWnd.addPoint({ (double)_len, logres }, logColor, 0, logIndex, false);
     }
 
     invalidateButton();
     delete[] arr;
 
-    cout << clock() - start << "ms заняли вычесления сложности сортировки\n";
+    dcout << clock() - start << "ms заняли вычесления сложности сортировки\n";
 }
 
 void MainCoorLinLayout::monteCarlo(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x))
@@ -270,7 +265,6 @@ void MainCoorLinLayout::gradientDescentOddsComputation()
     bottomLogFnc.setText(bottomLogText.c_str());
 }
 
-
 double MainCoorLinLayout::gradientDescent(Vector& _odds, MultiLayCoordinatSystemWindow& _wnd, double (*fnc) (double k, double b, double x), Vector learning_rate)
 {
     Vector gradientDelta = { 0.1, 0.1 };
@@ -287,11 +281,7 @@ double MainCoorLinLayout::gradientDescent(Vector& _odds, MultiLayCoordinatSystem
 
         _odds.x -= learning_rate.x * xDerivative;
         _odds.y -= learning_rate.y * yDerivative;
-        //printf("");
     }
-    //printf("");
-
-    //cout << "На сортировку лучше всего ложится: " << oddsToString(_odds) << endl;
 
     double finalQuadraticDelta = computeQuadraticDelta(_odds.x, _odds.y, _wnd, fnc);
 
@@ -342,7 +332,6 @@ void MainCoorLinLayout::randomArrFill(int* arr, int len)
         arr[i] = rand();
     }
 }
-
 
 int MainCoorLinLayout::onSize(Vector _managerSize, Rect _newRect)
 {

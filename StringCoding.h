@@ -3,7 +3,6 @@
 #pragma once
 
 #include <string>
-#include <fstream>
 
 wchar_t* readStr(std::string& str);
 

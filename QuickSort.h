@@ -9,4 +9,3 @@ void exchange(char* arr, int fIndex, int sIndex, int elementSize, int* midIndex,
 int getByteIndex(int index, int elementSize);
 void sort3(char* arr, int fElement, int elementSize, int* midIndex, char** minIndexptr, int (*cmp)(const void* obj1, const void* obj2));
 int cmpInt(const void* a, const void* b);
-

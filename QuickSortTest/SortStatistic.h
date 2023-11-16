@@ -22,4 +22,3 @@ void setCExchanges(int exchanges)
 {
     cExchanges = exchanges;
 }
-

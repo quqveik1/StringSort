@@ -7,5 +7,3 @@
 #elif defined(__APPLE__) || defined(__MACH__)
 #include "StringCodingMac.cpp"
 #endif
-
-

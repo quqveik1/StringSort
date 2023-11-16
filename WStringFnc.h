@@ -14,8 +14,6 @@
 
 void workWithText(std::wstring path_str, std::wstring destFileName);
 
-//you need to delete data from originalfile
-
 template<typename PATHSTR>
 void readText(PATHSTR& path, std::wstring_view* originalfile);
 int findEOLsN_(const std::wstring_view& text);

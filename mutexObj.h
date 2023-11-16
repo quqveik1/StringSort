@@ -17,7 +17,4 @@ public:
     T& operator = (const T& a1);
 };
 
-mutexObj& mutexObj::operator = (const mutexObj& a1)
-{
-
-}
+mutexObj& mutexObj::operator = (const mutexObj& a1) {}

@@ -15,7 +15,6 @@ wchar_t* readStr(std::string& str)
     return buffer;
 }
 
-
 template <typename TSTR>
 void _saveString(const TSTR& str, std::ofstream& stream)
 {
@@ -57,4 +56,3 @@ void useNormalLocale()
 {
     std::setlocale(LC_ALL, "russian");
 }
-

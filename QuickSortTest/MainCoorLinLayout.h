@@ -3,6 +3,7 @@
 #include <MultiLayCoordinatSystemWindow.cpp>
 #include <TextView.cpp>
 
+
 struct MainCoorLinLayout : LinearLayout
 {
     const int maxArrLen = 150;

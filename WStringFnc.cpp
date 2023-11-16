@@ -11,8 +11,6 @@
 
 void workWithText(std::wstring path_str, std::wstring destFileName)
 {
-    //int res = _setmode(_fileno(stdout), _O_U16TEXT);
-
     std::wstring_view path = path_str;
 
     std::wstring_view fulltext(L"");
@@ -146,8 +144,6 @@ void printLines(const std::wstring** str, int len)
     }
 }
 
-
-
 void copyOriginalTextForSort(std::wstring_view* textLines, std::wstring_view** startToBackLines, int len)
 {
     for (int i = 0; i < len; i++)
@@ -155,7 +151,6 @@ void copyOriginalTextForSort(std::wstring_view* textLines, std::wstring_view** s
         startToBackLines[i] = &(textLines[i]);
     }
 }
-
 
 int backToStartCmp(const void* str1, const void* str2)
 {
@@ -310,7 +305,6 @@ void fromOneCharToStrings(const std::wstring_view& text, std::wstring_view ptext
         }
     }
 }
-
 
 int findEOLsN_(const std::wstring_view& text)
 {

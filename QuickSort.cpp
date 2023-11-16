@@ -15,7 +15,6 @@ void quickSort(void* arr, int len, int elementSize, int (*cmp)(const void* obj1,
     quickSort((char*)arr, elementSize, 0, len - 1, cmp);
 }
 
-
 void quickSort(char* arr, int elementSize, const int left, const int right, int (*cmp)(const void* obj1, const void* obj2))
 {
     int len = (right - left) + 1;
@@ -45,7 +44,6 @@ void quickSort(char* arr, int elementSize, const int left, const int right, int 
         sort3(arr, left, elementSize, &midIndex, &midNum, cmp);
         return;
     }
-
 
     for (;;)
     {
@@ -77,7 +75,6 @@ void quickSort(char* arr, int elementSize, const int left, const int right, int 
         quickSort(arr, elementSize, left, currRight, cmp);
         quickSort(arr, elementSize, currRight + 1, right, cmp);
     }
-
 }
 
 void sort3(char* arr, int fElement, int elementSize, int* midIndex, char** minIndexptr, int (*cmp)(const void* obj1, const void* obj2))
@@ -104,8 +101,6 @@ int getByteIndex(int index, int elementSize)
     return index * elementSize;
 }
 
-
-
 void exchange(char* a, char* b, int elementSize)
 {
     char t = 0;
@@ -117,7 +112,6 @@ void exchange(char* a, char* b, int elementSize)
         b[i] = t;
     }
 }
-
 
 void exchange(char* arr, int fIndex, int sIndex, int elementSize, int* midIndex, char** minIndexptr)
 {
@@ -133,9 +127,7 @@ void exchange(char* arr, int fIndex, int sIndex, int elementSize, int* midIndex,
         (*minIndexptr) = &arr[getByteIndex(fIndex, elementSize)];
         *midIndex = fIndex;
     }
-
 }
-
 
 int cmpInt(const void* a, const void* b)
 {
